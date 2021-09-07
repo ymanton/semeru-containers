@@ -82,7 +82,8 @@ RUN set -eux; \
     [ "${SCC_SIZE}" -eq 0 ] && SCC_SIZE=1; \
     SCC_SIZE="${SCC_SIZE}m"; \
     java -Xshareclasses:name=openj9_system_scc,cacheDir=/opt/java/.scc,bootClassesOnly,nonFatal,createLayer -Xscmx$SCC_SIZE -version; \
-    unset OPENJ9_JAVA_OPTIONS; \ \
+    unset OPENJ9_JAVA_OPTIONS; \
+    \
     export OPENJ9_JAVA_OPTIONS="-Xshareclasses:name=openj9_system_scc,cacheDir=/opt/java/.scc,bootClassesOnly,nonFatal"; \
     "${INSTALL_PATH_TOMCAT}"/bin/startup.sh; \
     sleep 5; \
