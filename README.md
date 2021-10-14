@@ -18,3 +18,6 @@ This repository contains the Dockerfiles for the official IBMÂ® Semeru Runtimeâ„
 |  Centos 7 | JRE8 | [Dockerfile](./8/jre/centos/Dockerfile.open.releases.full) |
 |  Centos 7 | JRE11 | [Dockerfile](./11/jre/centos/Dockerfile.open.releases.full) |
 |  Centos 7 | JRE16 | [Dockerfile](./16/jre/centos/Dockerfile.open.releases.full) |
+
+## Issues
+Please See the [Semeru-Runtimes](https://github.com/ibmruntimes/Semeru-Runtimes) repo for issue reporting.
