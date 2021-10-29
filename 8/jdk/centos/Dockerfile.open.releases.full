@@ -28,7 +28,7 @@ RUN set -eux; \
        aarch64|arm64) \
          ESUM='055e51b462fac3af198424ab41804959bf769274ebdffef9ac8bf036a9d73b95'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk8u312-b07_openj9-0.29.0/ibm-semeru-open-jdk_aarch64_linux_8u312b07_openj9-0.29.0.tar.gz'; \
-         ;;
+         ;; \
        ppc64el|ppc64le) \
          ESUM='ebd9d0b4e9ecca578b684e080f0c45fa4edb1a4d5f572ea21ff61b301dd7c870'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk8u312-b07_openj9-0.29.0/ibm-semeru-open-jdk_ppc64le_linux_8u312b07_openj9-0.29.0.tar.gz'; \
