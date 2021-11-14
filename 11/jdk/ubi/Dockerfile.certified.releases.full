@@ -23,7 +23,7 @@ RUN yum install -y tzdata openssl curl wget openssl ca-certificates fontconfig g
 #RUN dnf install -y tzdata openssl curl ca-certificates fontconfig glibc-langpack-en gzip tar \
 #    && dnf update -y; dnf clean all
 
-LABEL name="IBM Semeru Runtime " \
+LABEL name="IBM Semeru Runtime Certified Edition" \
       vendor="International Business Machines Corporation" \
       version="11.0.12.0" \
       release="11" \
@@ -43,6 +43,10 @@ RUN set -eux; \
        ppc64el|ppc64le) \
          ESUM='d061a74a6c445aecf902ba3566b1df2a30f5f9b8d0158b39b76135f9062cc56e'; \
          YML_FILE='11.0/jdk/linux/ppc64le/index.yml'; \
+         ;; \
+       s390x) \
+         ESUM='f1f69c069e66066e9864691ea2deef20c835cb1bb292d807b06e59533921c3f4'; \
+         YML_FILE='11.0/jdk/linux/s390x/index.yml'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
@@ -74,7 +78,7 @@ ENV JAVA_HOME=/opt/ibm/java \
 
 
 # Create OpenJ9 SharedClassCache (SCC) for bootclasses to improve the java startup.
-# Downloads and runs tomcat to generate SCC for bootclasses at /opt/java/.scc/openj9_system_scc
+# Downloads and runs tomcat to generate SCC for bootclasses at /opt/ibm/java/.scc/openj9_system_scc
 # Does a dry-run and calculates the optimal cache size and recreates the cache with the appropriate size.
 # With SCC, OpenJ9 startup is improved ~50% with an increase in image size of ~14MB
 # Application classes can be create a separate cache layer with this as the base for further startup improvement
@@ -93,7 +97,7 @@ RUN set -eux; \
     tar -xf "${DOWNLOAD_PATH_TOMCAT}"/tomcat.tar.gz -C "${INSTALL_PATH_TOMCAT}" --strip-components=1; \
     rm -rf "${DOWNLOAD_PATH_TOMCAT}"; \
     \
-    java -Xshareclasses:name=dry_run_scc,cacheDir=/opt/java/.scc,bootClassesOnly,nonFatal,createLayer -Xscmx$SCC_SIZE -version; \
+    java -Xshareclasses:name=dry_run_scc,cacheDir=/opt/ibm/java/.scc,bootClassesOnly,nonFatal,createLayer -Xscmx$SCC_SIZE -version; \
     export OPENJ9_JAVA_OPTIONS="-Xshareclasses:name=dry_run_scc,cacheDir=/opt/ibm/java/.scc,bootClassesOnly,nonFatal"; \
     "${INSTALL_PATH_TOMCAT}"/bin/startup.sh; \
     sleep 5; \
