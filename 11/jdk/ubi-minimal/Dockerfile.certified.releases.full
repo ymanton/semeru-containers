@@ -13,25 +13,22 @@
 # limitations under the License.
 #
 
-FROM registry.access.redhat.com/ubi8/ubi:8.4
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.4
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-RUN yum install -y tzdata openssl curl wget openssl ca-certificates fontconfig glibc-langpack-en gzip tar \
-    && yum update; yum clean all
-
-#RUN dnf install -y tzdata openssl curl ca-certificates fontconfig glibc-langpack-en gzip tar \
-#    && dnf update -y; dnf clean all
+RUN microdnf install -y tzdata openssl curl ca-certificates fontconfig glibc-langpack-en gzip tar \
+    && microdnf update -y; microdnf clean all
 
 LABEL name="IBM Semeru Runtime Certified Edition" \
       vendor="International Business Machines Corporation" \
       version="11.0.12.0" \
       release="11" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
-      summary="IBM Semeru Runtime Certified Edition Docker Image for OpenJDK with openj9 and ubi" \
+      summary="IBM Semeru Runtime Certified Edition Docker Image for OpenJDK with openj9 and ubi-minimal" \
       description="For more information on this image please see https://github.com/ibmruntimes/semeru-containers/blob/master/README.md"
 
-ENV JAVA_VERSION 11.0.12.0
+ENV JAVA_VERSION 11.0.12.0 
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
@@ -75,7 +72,6 @@ RUN set -eux; \
 ENV JAVA_HOME=/opt/ibm/java \
     PATH=/opt/ibm/java/bin:$PATH \
     IBM_JAVA_OPTIONS="-XX:+UseContainerSupport"
-
 
 # Create OpenJ9 SharedClassCache (SCC) for bootclasses to improve the java startup.
 # Downloads and runs tomcat to generate SCC for bootclasses at /opt/ibm/java/.scc/openj9_system_scc
