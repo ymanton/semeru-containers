@@ -25,27 +25,27 @@ RUN yum install -y tzdata openssl curl wget openssl ca-certificates fontconfig g
 
 LABEL name="IBM Semeru Runtime Certified Edition" \
       vendor="International Business Machines Corporation" \
-      version="11.0.12.0" \
+      version="11.0.13.0" \
       release="11" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
       summary="IBM Semeru Runtime Certified Edition Docker Image for OpenJDK with openj9 and ubi" \
       description="For more information on this image please see https://github.com/ibmruntimes/semeru-containers/blob/master/README.md"
 
-ENV JAVA_VERSION 11.0.12.0
+ENV JAVA_VERSION 11.0.13.0
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-         ESUM='4691610316eb4a205557e3aa7d6d84caa1f140a8e584eaaef5ecbcc99378c0fd'; \
+         ESUM='29f3683ea18b6527e560d8096221683af6adee8419e740682200b0f4eb4012b3'; \
          YML_FILE='11.0/jdk/linux/x86_64/index.yml'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='d061a74a6c445aecf902ba3566b1df2a30f5f9b8d0158b39b76135f9062cc56e'; \
+         ESUM='6aaf8ac5f3f163856583f67280abfa3dd7ed3feed55fc46a54f269bfd9dd275c'; \
          YML_FILE='11.0/jdk/linux/ppc64le/index.yml'; \
          ;; \
        s390x) \
-         ESUM='f1f69c069e66066e9864691ea2deef20c835cb1bb292d807b06e59533921c3f4'; \
+         ESUM='39d9c4c1c0c693fe8d6814073410968137ad7a850171000ac842fa238548b001'; \
          YML_FILE='11.0/jdk/linux/s390x/index.yml'; \
          ;; \
        *) \
