@@ -13,7 +13,7 @@
 # limitations under the License.
 #
 
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.4
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.5
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
@@ -22,38 +22,35 @@ RUN microdnf install -y tzdata openssl curl wget ca-certificates fontconfig glib
 
 LABEL name="IBM Semeru Runtime Certified Edition" \
       vendor="International Business Machines Corporation" \
-      version="11.0.13.0" \
+      version="11.0.14.1" \
       release="11" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
       summary="IBM Semeru Runtime Certified Edition Docker Image for OpenJDK with openj9 and ubi-minimal" \
       description="For more information on this image please see https://github.com/ibmruntimes/semeru-containers/blob/master/README.md"
 
-ENV JAVA_VERSION 11.0.13.0
+ENV JAVA_VERSION 11.0.14.1
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-         ESUM='29f3683ea18b6527e560d8096221683af6adee8419e740682200b0f4eb4012b3'; \
-         YML_FILE='11.0/jdk/linux/x86_64/index.yml'; \
+         ESUM='5c50161f5b73a697b6e7863fdeef651e12aebc5e645aafce8d5aa6e8272863f4'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.14.1%2B1_openj9-0.30.1/ibm-semeru-certified-jdk_x64_linux_11.0.14.1-archive.bin'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='6aaf8ac5f3f163856583f67280abfa3dd7ed3feed55fc46a54f269bfd9dd275c'; \
-         YML_FILE='11.0/jdk/linux/ppc64le/index.yml'; \
+         ESUM='24d9c3f6cb8b78f4baf4ead7db0de8d9b4658aca56c38bd69705946c96068703'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.14.1%2B1_openj9-0.30.1/ibm-semeru-certified-jdk_ppc64le_linux_11.0.14.1-archive.bin'; \
          ;; \
        s390x) \
-         ESUM='39d9c4c1c0c693fe8d6814073410968137ad7a850171000ac842fa238548b001'; \
-         YML_FILE='11.0/jdk/linux/s390x/index.yml'; \
+         ESUM='cd429671cc7b0e62675c24ebc90cadfd5ea397daee9e2e838b08d4413c281dfb'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.14.1%2B1_openj9-0.30.1/ibm-semeru-certified-jdk_s390x_linux_11.0.14.1-archive.bin'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
          exit 1; \
          ;; \
     esac; \
-    BASE_URL="https://public.dhe.ibm.com/ibmdl/export/pub/systems/cloud/runtimes/java/meta/"; \
-    wget -q -U UA_IBM_JAVA_Docker -O /tmp/index.yml ${BASE_URL}/${YML_FILE}; \
-    JAVA_URL=$(sed -n '/^'${JAVA_VERSION}:'/{n;s/\s*uri:\s//p}'< /tmp/index.yml); \
-    wget -q -U UA_IBM_JAVA_Docker -O /tmp/ibm-java.bin ${JAVA_URL}; \
+    curl -LfsSo /tmp/ibm-java.bin ${BINARY_URL}; \
     echo "${ESUM}  /tmp/ibm-java.bin" | sha256sum -c -; \
     echo "INSTALLER_UI=silent" > /tmp/response.properties; \
     echo "USER_INSTALL_DIR=/opt/ibm" >> /tmp/response.properties; \
