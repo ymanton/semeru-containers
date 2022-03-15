@@ -33,7 +33,7 @@ ENV JAVA_HOME=C:\\openjdk-11 \
     ProgramFiles="C:\\Program Files" \
     WindowsPATH="C:\\Windows\\system32;C:\\Windows"
 ENV PATH="${WindowsPATH};${JAVA_HOME}\\bin"
-ENV JAVA_TOOL_OPTIONS="-XX:+IgnoreUnrecognizedVMOptions -XX:+IdleTuningGcOnIdle -Xshareclasses:name=openj9_system_scc,cacheDir=/opt/java/.scc,readonly,nonFatal"
+ENV JAVA_TOOL_OPTIONS="-XX:+IgnoreUnrecognizedVMOptions -XX:+PortableSharedCache -XX:+IdleTuningGcOnIdle -Xshareclasses:name=openj9_system_scc,cacheDir=/opt/java/.scc,readonly,nonFatal"
 
 RUN echo Verifying install ... \
     && echo javac --version && javac --version \

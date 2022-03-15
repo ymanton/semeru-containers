@@ -42,5 +42,5 @@ RUN Write-Host ('Downloading https://github.com/ibmruntimes/semeru11-binaries/re
     Remove-Item -Path C:\temp -Recurse | Out-Null; \
     Write-Host 'Removing openjdk.msi ...'; \
     Remove-Item openjdk.msi -Force
-ENV JAVA_TOOL_OPTIONS="-XX:+IgnoreUnrecognizedVMOptions -XX:+IdleTuningGcOnIdle -Xshareclasses:name=openj9_system_scc,cacheDir=/opt/java/.scc,readonly,nonFatal"
+ENV JAVA_TOOL_OPTIONS="-XX:+IgnoreUnrecognizedVMOptions -XX:+PortableSharedCache -XX:+IdleTuningGcOnIdle -Xshareclasses:name=openj9_system_scc,cacheDir=/opt/java/.scc,readonly,nonFatal"
 CMD ["jshell"]
