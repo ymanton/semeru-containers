@@ -59,7 +59,7 @@ RUN set -eux; \
 
 ENV JAVA_HOME=/opt/ibm/java \
     PATH="/opt/ibm/java/bin:$PATH"
-ENV JAVA_TOOL_OPTIONS="-XX:+IgnoreUnrecognizedVMOptions -XX:+IdleTuningGcOnIdle -Xshareclasses:name=openj9_system_scc,cacheDir=/opt/ibm/java/.scc,readonly,nonFatal"
+ENV JAVA_TOOL_OPTIONS="-XX:+IgnoreUnrecognizedVMOptions -XX:+PortableSharedCache -XX:+IdleTuningGcOnIdle -Xshareclasses:name=openj9_system_scc,cacheDir=/opt/ibm/java/.scc,readonly,nonFatal"
 
 # Create OpenJ9 SharedClassCache (SCC) for bootclasses to improve the java startup.
 # Downloads and runs tomcat to generate SCC for bootclasses at /opt/ibm/java/.scc/openj9_system_scc
