@@ -1,0 +1,3 @@
+icr.io/appcafe/ibm-semeru-runtimes:certified-17-jdk-ubi-amd64              17/jdk/ubi/
+icr.io/appcafe/ibm-semeru-runtimes:certified-17-jdk-ubi-minimal-amd64              17/jdk/ubi-minimal/
+icr.io/appcafe/ibm-semeru-runtimes:certified-17-jdk-ubuntu-amd64              17/jdk/ubuntu/
