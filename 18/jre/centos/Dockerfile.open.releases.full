@@ -13,36 +13,29 @@
 # limitations under the License.
 #
 
-FROM ubuntu:20.04
+FROM centos:7
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata curl ca-certificates fontconfig locales \
-    && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
-    && locale-gen en_US.UTF-8 \
-    && rm -rf /var/lib/apt/lists/*
+RUN yum install -y tzdata openssl curl ca-certificates fontconfig gzip tar \
+    && yum clean all
 
-ENV JAVA_VERSION jdk8u332-b09_openj9-0.32.0
+ENV JAVA_VERSION jdk-18.0.1+10_openj9-0.32.0
 
 RUN set -eux; \
-    ARCH="$(dpkg --print-architecture)"; \
+    ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        aarch64|arm64) \
-         ESUM='f1a27166eb8063e848074896f3973bc3fc1e50d6518dde9817e86ebc36a10296'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk8u332-b09_openj9-0.32.0/ibm-semeru-open-jdk_aarch64_linux_8u332b09_openj9-0.32.0.tar.gz'; \
+         ESUM='637d1399d3e5da6dcbdaaf4ab0610b1320bdeb390e8bc7dd6a1f84d50161e8c8'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru18-binaries/releases/download/jdk-18.0.1%2B10_openj9-0.32.0/ibm-semeru-open-jre_aarch64_linux_18.0.1_10_openj9-0.32.0.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM=' b23fd5d6d7b50e9d1f182f68f3d0179e4e2810a3d9fffb98e96565ced527364c'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk8u332-b09_openj9-0.32.0/ibm-semeru-open-jdk_ppc64le_linux_8u332b09_openj9-0.32.0.tar.gz'; \
+         ESUM='60a3c1d32f60a924687efbccdd410df743cc4098088b5ca6a424509aa0a02eab'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru18-binaries/releases/download/jdk-18.0.1%2B10_openj9-0.32.0/ibm-semeru-open-jre_ppc64le_linux_18.0.1_10_openj9-0.32.0.tar.gz'; \
          ;; \
        amd64|x86_64) \
-         ESUM='beff2d92bcf32525692557c13a0695a3cd21967bd5efba370192a8ce184775c7'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk8u332-b09_openj9-0.32.0/ibm-semeru-open-jdk_x64_linux_8u332b09_openj9-0.32.0.tar.gz'; \
-         ;; \
-       s390x) \
-         ESUM='a5f3571203000a822df8e6b5e0ffab06948e3710bf1d33f337729fa8726c01ad'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk8u332-b09_openj9-0.32.0/ibm-semeru-open-jdk_s390x_linux_8u332b09_openj9-0.32.0.tar.gz'; \
+         ESUM='9e23d79cc6d6aa6110f8ff2a4d89c4a323ba0470632ac925f2acd67c2c1b64b8'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru18-binaries/releases/download/jdk-18.0.1%2B10_openj9-0.32.0/ibm-semeru-open-jre_x64_linux_18.0.1_10_openj9-0.32.0.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
