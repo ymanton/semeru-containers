@@ -17,37 +17,33 @@ FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-RUN microdnf install -y tzdata openssl curl ca-certificates fontconfig glibc-langpack-en gzip tar \
+RUN microdnf install -y tzdata openssl curl wget ca-certificates fontconfig glibc-langpack-en gzip tar \
     && microdnf update -y; microdnf clean all
 
-LABEL name="IBM Semeru Runtime Open Edition" \
+LABEL name="IBM Semeru Runtime Certified Edition" \
       vendor="International Business Machines Corporation" \
-      version="jdk-17.0.3+7_openj9-0.32.0" \
-      release="17" \
+      version="11.0.15.0" \
+      release="11" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
-      summary="IBM Semeru Runtime Docker Image for OpenJDK with openj9 and ubi-minimal" \
+      summary="IBM Semeru Runtime Certified Edition Docker Image for OpenJDK with openj9 and ubi-minimal" \
       description="For more information on this image please see https://github.com/ibmruntimes/semeru-containers/blob/master/README.md"
 
-ENV JAVA_VERSION jdk-17.0.3+7_openj9-0.32.0
+ENV JAVA_VERSION 11.0.15.0
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
-       aarch64|arm64) \
-         ESUM='f899948ea0c5dc80a66f801db585939a25a4ae7e1f21a9a8f3bf3749c3baa87f'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.3%2B7_openj9-0.32.0/ibm-semeru-open-jre_aarch64_linux_17.0.3_7_openj9-0.32.0.tar.gz'; \
+       amd64|x86_64) \
+         ESUM='1ee17343ba59398c097290619debd2d008fa254dbbe242c03453372de464f9cd'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.15%2B10_openj9-0.32.0/ibm-semeru-certified-jre_x64_linux_11.0.15.0.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='9c54166490ac55a6bd26249b57eae5df4531635f4871e6642e7979affc894875'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.3%2B7_openj9-0.32.0/ibm-semeru-open-jre_ppc64le_linux_17.0.3_7_openj9-0.32.0.tar.gz'; \
-         ;; \
-       amd64|x86_64) \
-         ESUM='dad35fec82047e3a82c6e2dda8b53ee763b55aaedaed13b7b130856f4a3ffd35'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.3%2B7_openj9-0.32.0/ibm-semeru-open-jre_x64_linux_17.0.3_7_openj9-0.32.0.tar.gz'; \
+         ESUM='428aa813cb5ff24b65b8311275eef7bc8511db6170d352b5d54973a64d0ce3e0'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.15%2B10_openj9-0.32.0/ibm-semeru-certified-jre_ppc64le_linux_11.0.15.0.tar.gz'; \
          ;; \
        s390x) \
-         ESUM='4e2f631ad18c288e419db5c35295829dd7e83f4cd1be95252db06eb622b23090'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.3%2B7_openj9-0.32.0/ibm-semeru-open-jre_s390x_linux_17.0.3_7_openj9-0.32.0.tar.gz'; \
+         ESUM='ef7e62add3ae475534f3301804d5a5a5742b8e07468cc3ae18fc32ab5cd67ca3'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.15%2B10_openj9-0.32.0/ibm-semeru-certified-jre_s390x_linux_11.0.15.0.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
@@ -56,19 +52,21 @@ RUN set -eux; \
     esac; \
     curl -LfsSo /tmp/openjdk.tar.gz ${BINARY_URL}; \
     echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
-    mkdir -p /opt/java/openjdk; \
-    cd /opt/java/openjdk; \
-    tar -xf /tmp/openjdk.tar.gz --strip-components=1; \
+    mkdir -p /opt/ibm/; \
+    cd /opt/ibm/; \
+    tar -xf /tmp/openjdk.tar.gz ; \
     mkdir -p /licenses; \
-    cp /opt/java/openjdk/legal/java.base/LICENSE /licenses; \
+    mv /opt/ibm/jdk-11* /opt/ibm/java; \
+    cp /opt/ibm/java/legal/java.base/license/license_en.txt /licenses; \
     rm -rf /tmp/openjdk.tar.gz;
 
-ENV JAVA_HOME=/opt/java/openjdk \
-    PATH="/opt/java/openjdk/bin:$PATH"
-ENV JAVA_TOOL_OPTIONS="-XX:+IgnoreUnrecognizedVMOptions -XX:+PortableSharedCache -XX:+IdleTuningGcOnIdle -Xshareclasses:name=openj9_system_scc,cacheDir=/opt/java/.scc,readonly,nonFatal"
+
+ENV JAVA_HOME=/opt/ibm/java \
+    PATH=/opt/ibm/java/bin:$PATH \
+    IBM_JAVA_OPTIONS="-XX:+UseContainerSupport"
 
 # Create OpenJ9 SharedClassCache (SCC) for bootclasses to improve the java startup.
-# Downloads and runs tomcat to generate SCC for bootclasses at /opt/java/.scc/openj9_system_scc
+# Downloads and runs tomcat to generate SCC for bootclasses at /opt/ibm/java/.scc/openj9_system_scc
 # Does a dry-run and calculates the optimal cache size and recreates the cache with the appropriate size.
 # With SCC, OpenJ9 startup is improved ~50% with an increase in image size of ~14MB
 # Application classes can be create a separate cache layer with this as the base for further startup improvement
@@ -87,32 +85,34 @@ RUN set -eux; \
     tar -xf "${DOWNLOAD_PATH_TOMCAT}"/tomcat.tar.gz -C "${INSTALL_PATH_TOMCAT}" --strip-components=1; \
     rm -rf "${DOWNLOAD_PATH_TOMCAT}"; \
     \
-    java -Xshareclasses:name=dry_run_scc,cacheDir=/opt/java/.scc,bootClassesOnly,nonFatal,createLayer -Xscmx$SCC_SIZE -version; \
-    export OPENJ9_JAVA_OPTIONS="-Xshareclasses:name=dry_run_scc,cacheDir=/opt/java/.scc,bootClassesOnly,nonFatal"; \
+    java -Xshareclasses:name=dry_run_scc,cacheDir=/opt/ibm/java/.scc,bootClassesOnly,nonFatal,createLayer -Xscmx$SCC_SIZE -version; \
+    export OPENJ9_JAVA_OPTIONS="-Xshareclasses:name=dry_run_scc,cacheDir=/opt/ibm/java/.scc,bootClassesOnly,nonFatal"; \
     "${INSTALL_PATH_TOMCAT}"/bin/startup.sh; \
     sleep 5; \
     "${INSTALL_PATH_TOMCAT}"/bin/shutdown.sh -force; \
     sleep 15; \
-    FULL=$( (java -Xshareclasses:name=dry_run_scc,cacheDir=/opt/java/.scc,printallStats 2>&1 || true) | awk '/^Cache is [0-9.]*% .*full/ {print substr($3, 1, length($3)-1)}'); \
-    DST_CACHE=$(java -Xshareclasses:name=dry_run_scc,cacheDir=/opt/java/.scc,destroy 2>&1 || true); \
+    FULL=$( (java -Xshareclasses:name=dry_run_scc,cacheDir=/opt/ibm/java/.scc,printallStats 2>&1 || true) | awk '/^Cache is [0-9.]*% .*full/ {print substr($3, 1, length($3)-1)}'); \
+    DST_CACHE=$(java -Xshareclasses:name=dry_run_scc,cacheDir=/opt/ibm/java/.scc,destroy 2>&1 || true); \
     SCC_SIZE=$(echo $SCC_SIZE | sed 's/.$//'); \
     SCC_SIZE=$(awk "BEGIN {print int($SCC_SIZE * $FULL / 100.0)}"); \
     [ "${SCC_SIZE}" -eq 0 ] && SCC_SIZE=1; \
     SCC_SIZE="${SCC_SIZE}m"; \
-    java -Xshareclasses:name=openj9_system_scc,cacheDir=/opt/java/.scc,bootClassesOnly,nonFatal,createLayer -Xscmx$SCC_SIZE -version; \
+    java -Xshareclasses:name=openj9_system_scc,cacheDir=/opt/ibm/java/.scc,bootClassesOnly,nonFatal,createLayer -Xscmx$SCC_SIZE -version; \
     unset OPENJ9_JAVA_OPTIONS; \
     \
-    export OPENJ9_JAVA_OPTIONS="-Xshareclasses:name=openj9_system_scc,cacheDir=/opt/java/.scc,bootClassesOnly,nonFatal"; \
+    export OPENJ9_JAVA_OPTIONS="-Xshareclasses:name=openj9_system_scc,cacheDir=/opt/ibm/java/.scc,bootClassesOnly,nonFatal"; \
     "${INSTALL_PATH_TOMCAT}"/bin/startup.sh; \
     sleep 5; \
     "${INSTALL_PATH_TOMCAT}"/bin/shutdown.sh -force; \
     sleep 5; \
-    FULL=$( (java -Xshareclasses:name=openj9_system_scc,cacheDir=/opt/java/.scc,printallStats 2>&1 || true) | awk '/^Cache is [0-9.]*% .*full/ {print substr($3, 1, length($3)-1)}'); \
+    FULL=$( (java -Xshareclasses:name=openj9_system_scc,cacheDir=/opt/ibm/java/.scc,printallStats 2>&1 || true) | awk '/^Cache is [0-9.]*% .*full/ {print substr($3, 1, length($3)-1)}'); \
     echo "SCC layer is $FULL% full."; \
     rm -rf "${INSTALL_PATH_TOMCAT}"; \
-    if [ -d "/opt/java/.scc" ]; then \
-          chmod -R 0777 /opt/java/.scc; \
+    if [ -d "/opt/ibm/java/.scc" ]; then \
+          chmod -R 0777 /opt/ibm/java/.scc; \
     fi; \
     \
     echo "SCC generation phase completed";
 
+CMD ["jshell"]
+USER 1001

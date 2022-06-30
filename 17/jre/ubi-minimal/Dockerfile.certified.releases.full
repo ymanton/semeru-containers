@@ -20,35 +20,31 @@ ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 RUN microdnf install -y tzdata openssl curl ca-certificates fontconfig glibc-langpack-en gzip tar \
     && microdnf update -y; microdnf clean all
 
-LABEL name="IBM Semeru Runtime Open Edition" \
+LABEL name="IBM Semeru Runtime Certified Edition" \
       vendor="International Business Machines Corporation" \
-      version="jdk-17.0.3+7_openj9-0.32.0" \
+      version="17.0.3.0" \
       release="17" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
-      summary="IBM Semeru Runtime Docker Image for OpenJDK with openj9 and ubi-minimal" \
+      summary="IBM Semeru Runtime Certified Docker Image for OpenJDK with openj9 and ubi-minimal" \
       description="For more information on this image please see https://github.com/ibmruntimes/semeru-containers/blob/master/README.md"
 
-ENV JAVA_VERSION jdk-17.0.3+7_openj9-0.32.0
+ENV JAVA_VERSION 17.0.3.0
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
-       aarch64|arm64) \
-         ESUM='f899948ea0c5dc80a66f801db585939a25a4ae7e1f21a9a8f3bf3749c3baa87f'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.3%2B7_openj9-0.32.0/ibm-semeru-open-jre_aarch64_linux_17.0.3_7_openj9-0.32.0.tar.gz'; \
+       amd64|x86_64) \
+         ESUM='a957f97388fe2ffb51e6c74da4ac655e8552e12e451a4b5fe0976df15b7887bf'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.3%2B7_openj9-0.32.0/ibm-semeru-certified-jre_x64_linux_17.0.3.0.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='9c54166490ac55a6bd26249b57eae5df4531635f4871e6642e7979affc894875'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.3%2B7_openj9-0.32.0/ibm-semeru-open-jre_ppc64le_linux_17.0.3_7_openj9-0.32.0.tar.gz'; \
-         ;; \
-       amd64|x86_64) \
-         ESUM='dad35fec82047e3a82c6e2dda8b53ee763b55aaedaed13b7b130856f4a3ffd35'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.3%2B7_openj9-0.32.0/ibm-semeru-open-jre_x64_linux_17.0.3_7_openj9-0.32.0.tar.gz'; \
+         ESUM='6ab019aa30836f7ce7308d1b5afa628c570dc05224d36bd759dcb96d64f674b2'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.3%2B7_openj9-0.32.0/ibm-semeru-certified-jre_ppc64le_linux_17.0.3.0.tar.gz'; \
          ;; \
        s390x) \
-         ESUM='4e2f631ad18c288e419db5c35295829dd7e83f4cd1be95252db06eb622b23090'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.3%2B7_openj9-0.32.0/ibm-semeru-open-jre_s390x_linux_17.0.3_7_openj9-0.32.0.tar.gz'; \
-         ;; \
+         ESUM='06dd982682cb93bd7c084a3644aa27b7373070409d0908feaf629f98e7d62b70'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.3%2B7_openj9-0.32.0/ibm-semeru-certified-jre_s390x_linux_17.0.3.0.tar.gz'; \
+         ;;\
        *) \
          echo "Unsupported arch: ${ARCH}"; \
          exit 1; \
@@ -56,15 +52,16 @@ RUN set -eux; \
     esac; \
     curl -LfsSo /tmp/openjdk.tar.gz ${BINARY_URL}; \
     echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
-    mkdir -p /opt/java/openjdk; \
-    cd /opt/java/openjdk; \
-    tar -xf /tmp/openjdk.tar.gz --strip-components=1; \
+    mkdir -p /opt/ibm/; \
+    cd /opt/ibm/; \
+    tar -xf /tmp/openjdk.tar.gz ; \
     mkdir -p /licenses; \
-    cp /opt/java/openjdk/legal/java.base/LICENSE /licenses; \
+    mv /opt/ibm/jdk-17* /opt/ibm/java; \
+    cp /opt/ibm/java/legal/java.base/license/license_en.txt /licenses; \
     rm -rf /tmp/openjdk.tar.gz;
 
-ENV JAVA_HOME=/opt/java/openjdk \
-    PATH="/opt/java/openjdk/bin:$PATH"
+ENV JAVA_HOME=/opt/ibm/java \
+    PATH="/opt/ibm/java/bin:$PATH"
 ENV JAVA_TOOL_OPTIONS="-XX:+IgnoreUnrecognizedVMOptions -XX:+PortableSharedCache -XX:+IdleTuningGcOnIdle -Xshareclasses:name=openj9_system_scc,cacheDir=/opt/java/.scc,readonly,nonFatal"
 
 # Create OpenJ9 SharedClassCache (SCC) for bootclasses to improve the java startup.
@@ -116,3 +113,5 @@ RUN set -eux; \
     \
     echo "SCC generation phase completed";
 
+CMD ["jshell"]
+USER 1001
