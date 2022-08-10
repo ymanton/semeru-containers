@@ -20,22 +20,22 @@ ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 RUN yum install -y tzdata openssl curl ca-certificates fontconfig gzip tar \
     && yum clean all
 
-ENV JAVA_VERSION jdk8u332-b09_openj9-0.32.0
+ENV JAVA_VERSION jdk8u345-b01_openj9-0.33.0
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        aarch64|arm64) \
-         ESUM='f1a27166eb8063e848074896f3973bc3fc1e50d6518dde9817e86ebc36a10296'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk8u332-b09_openj9-0.32.0/ibm-semeru-open-jdk_aarch64_linux_8u332b09_openj9-0.32.0.tar.gz'; \
+         ESUM='6b89e648899709459b7c7dbe0a5b1ea480a88da84c6163f01255d638dbdd051b'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk8u345-b01_openj9-0.33.0/ibm-semeru-open-jdk_aarch64_linux_8u345b01_openj9-0.33.0.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM=' b23fd5d6d7b50e9d1f182f68f3d0179e4e2810a3d9fffb98e96565ced527364c'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk8u332-b09_openj9-0.32.0/ibm-semeru-open-jdk_ppc64le_linux_8u332b09_openj9-0.32.0.tar.gz'; \
+         ESUM='2e828024c779055c791bc2133ac2ecbb7cc4de25d164fa0aed36a47b51570c9d'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk8u345-b01_openj9-0.33.0/ibm-semeru-open-jdk_ppc64le_linux_8u345b01_openj9-0.33.0.tar.gz'; \
          ;; \
        amd64|x86_64) \
-         ESUM='beff2d92bcf32525692557c13a0695a3cd21967bd5efba370192a8ce184775c7'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk8u332-b09_openj9-0.32.0/ibm-semeru-open-jdk_x64_linux_8u332b09_openj9-0.32.0.tar.gz'; \
+         ESUM='82c8232a5cb420246457d65a5014602feb8b288079cdae896e22a2eb6e390b58'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru8-binaries/releases/download/jdk8u345-b01_openj9-0.33.0/ibm-semeru-open-jdk_x64_linux_8u345b01_openj9-0.33.0.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \

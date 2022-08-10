@@ -20,22 +20,22 @@ ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 RUN yum install -y tzdata openssl curl ca-certificates fontconfig gzip tar \
     && yum clean all
 
-ENV JAVA_VERSION jdk-18.0.1.1+2_openj9-0.32.0
+ENV JAVA_VERSION jdk-18.0.2+9_openj9-0.33.0
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        aarch64|arm64) \
-         ESUM='86bf05dae9510bd0679bf7489378b1411cf816885adbde7108d52e3b85d76d84'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru18-binaries/releases/download/jdk-18.0.1.1%2B2_openj9-0.32.0/ibm-semeru-open-jre_aarch64_linux_18.0.1.1_2_openj9-0.32.0.tar.gz'; \
+         ESUM='c9542d3f75757fcaef5a1464a5838015a59743bda99e51d42914ecd46bfb09ba'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru18-binaries/releases/download/jdk-18.0.2%2B9_openj9-0.33.0/ibm-semeru-open-jre_aarch64_linux_18.0.2_9_openj9-0.33.0.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='5b5e650847c39efa65e294df46c073091e9089579decdb125867af8e4bae2cb5'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru18-binaries/releases/download/jdk-18.0.1.1%2B2_openj9-0.32.0/ibm-semeru-open-jre_ppc64le_linux_18.0.1.1_2_openj9-0.32.0.tar.gz'; \
+         ESUM='0107ea02d299aaf248ac61d71b7ac18c8f3d8f54fc3a408a3f1025f81a210463'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru18-binaries/releases/download/jdk-18.0.2%2B9_openj9-0.33.0/ibm-semeru-open-jre_ppc64le_linux_18.0.2_9_openj9-0.33.0.tar.gz'; \
          ;; \
        amd64|x86_64) \
-         ESUM='761807f0c13500b1e94824928050c3485932cb596e2a499935f67b734c644c97'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru18-binaries/releases/download/jdk-18.0.1.1%2B2_openj9-0.32.0/ibm-semeru-open-jre_x64_linux_18.0.1.1_2_openj9-0.32.0.tar.gz'; \
+         ESUM='31f9c08f3b742e4055efa6e4bbf8d9e5be02c775c8fe2c68dd4a460a8ed52c28'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru18-binaries/releases/download/jdk-18.0.2%2B9_openj9-0.33.0/ibm-semeru-open-jre_x64_linux_18.0.2_9_openj9-0.33.0.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
