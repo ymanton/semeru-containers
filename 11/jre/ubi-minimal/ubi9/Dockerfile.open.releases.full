@@ -22,32 +22,32 @@ RUN microdnf install -y tzdata openssl ca-certificates fontconfig glibc-langpack
 
 LABEL name="IBM Semeru Runtime Open Edition" \
       vendor="International Business Machines Corporation" \
-      version="jdk-11.0.16.1+1_openj9-0.33.1" \
+      version="jdk-11.0.17+8_openj9-0.35.0" \
       release="11" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
       summary="IBM Semeru Runtime Docker Image for OpenJDK with openj9 and ubi-minimal" \
       description="For more information on this image please see https://github.com/ibmruntimes/semeru-containers/blob/master/README.md"
 
-ENV JAVA_VERSION jdk-11.0.16.1+1_openj9-0.33.1
+ENV JAVA_VERSION jdk-11.0.17+8_openj9-0.35.0
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        aarch64|arm64) \
-         ESUM='843557b315464818b70e6814288618e2e9645455ee67faa18ada299e6fa7c50f'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.16.1%2B1_openj9-0.33.1/ibm-semeru-open-jre_aarch64_linux_11.0.16.1_1_openj9-0.33.1.tar.gz'; \
+         ESUM='ab7f01a961559b49ce9b0a76af20191b7c047c6c1b6e5258e38f6c38de8cdc3f'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.17%2B8_openj9-0.35.0/ibm-semeru-open-jre_aarch64_linux_11.0.17_8_openj9-0.35.0.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='8121e6d0b6e33e2816ebca5f624f00f44a6dd1a797cc58afd6ebe5e49bf713ee'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.16.1%2B1_openj9-0.33.1/ibm-semeru-open-jre_ppc64le_linux_11.0.16.1_1_openj9-0.33.1.tar.gz'; \
+         ESUM='fba1dd9c25b0cce7efe124151b006624eeb2d2b0764284ca892d0e50ee457a41'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.17%2B8_openj9-0.35.0/ibm-semeru-open-jre_ppc64le_linux_11.0.17_8_openj9-0.35.0.tar.gz'; \
          ;; \
        amd64|x86_64) \
-         ESUM='038a44d5c81f14bce6458040f7b4eec48535dcbbdc59e3c536d6adc3326b64c7'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.16.1%2B1_openj9-0.33.1/ibm-semeru-open-jre_x64_linux_11.0.16.1_1_openj9-0.33.1.tar.gz'; \
+         ESUM='b1d31a4165cabcad66771a05acf8ff750f40953558494ba8d88e97fac55af6a9'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.17%2B8_openj9-0.35.0/ibm-semeru-open-jre_x64_linux_11.0.17_8_openj9-0.35.0.tar.gz'; \
          ;; \
        s390x) \
-         ESUM='fd1e07b5bdc028b39d870f9807208c6b41bfec8002e88bd78a4661684cab575b'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.16.1%2B1_openj9-0.33.1/ibm-semeru-open-jre_s390x_linux_11.0.16.1_1_openj9-0.33.1.tar.gz'; \
+         ESUM='5f52184c9f4fff9ed628c12da4567162c8be77f4bcbc5939b6fe6e9d250b3798'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.17%2B8_openj9-0.35.0/ibm-semeru-open-jre_s390x_linux_11.0.17_8_openj9-0.35.0.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
