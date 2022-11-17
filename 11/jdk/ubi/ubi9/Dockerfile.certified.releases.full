@@ -25,28 +25,28 @@ RUN yum install -y tzdata openssl wget openssl ca-certificates fontconfig glibc-
 
 LABEL name="IBM Semeru Runtime Certified Edition" \
       vendor="International Business Machines Corporation" \
-      version="11.0.16.1" \
+      version="11.0.17.0" \
       release="11" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
       summary="IBM Semeru Runtime Certified Edition Docker Image for OpenJDK with openj9 and ubi" \
       description="For more information on this image please see https://github.com/ibmruntimes/semeru-containers/blob/master/README.md"
 
-ENV JAVA_VERSION 11.0.16.1
+ENV JAVA_VERSION 11.0.17.0
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-         ESUM='70815fdc34ed77a9db7b87e5f1fc319603a0182ef712bbba971c2178477ca670'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.16.1%2B1_openj9-0.33.1/ibm-semeru-certified-jdk_x64_linux_11.0.16.1-archive.bin'; \
+         ESUM='043134d4bacea7a44f5c17f904f809bb340844086dedf3dee22c398fc2dfe726'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.17%2B8_openj9-0.35.0/ibm-semeru-certified-jdk_x64_linux_11.0.17.0-archive.bin'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='082088f722fbb90452681538573cb6b4a270db0af7428153b601519aeceb51af'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.16.1%2B1_openj9-0.33.1/ibm-semeru-certified-jdk_ppc64le_linux_11.0.16.1-archive.bin'; \
+         ESUM='a51a11d2cf6f48632cae71bc834cefa0e82049dda74ecb6a3fc1a98869f1ae2a'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.17%2B8_openj9-0.35.0/ibm-semeru-certified-jdk_ppc64le_linux_11.0.17.0-archive.bin'; \
          ;; \
        s390x) \
-         ESUM='ad24d67e141aa3d3e4335685da4a5abbd66d1c75a938186e038414f1f755707a'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.16.1%2B1_openj9-0.33.1/ibm-semeru-certified-jdk_s390x_linux_11.0.16.1-archive.bin'; \
+         ESUM='dcf7bf3392e4fb82eb24acb2deb04f7d2c4456390d76affd310faf811e6d5cf5'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.17%2B8_openj9-0.35.0/ibm-semeru-certified-jdk_s390x_linux_11.0.17.0-archive.bin'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
