@@ -13,26 +13,22 @@
 # limitations under the License.
 #
 
-FROM registry.access.redhat.com/ubi8/ubi:latest
+FROM centos:7
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-RUN dnf install -y tzdata openssl curl ca-certificates fontconfig glibc-langpack-en gzip tar \
-    && dnf update -y; dnf clean all
-
-LABEL name="IBM Semeru Runtime Certified Edition" \
-      vendor="International Business Machines Corporation" \
-      version="17.0.5.0" \
-      release="17" \
-      run="docker run --rm -ti <image_name:tag> /bin/bash" \
-      summary="IBM Semeru Runtime Certified Docker Image for OpenJDK with openj9 and ubi" \
-      description="For more information on this image please see https://github.com/ibmruntimes/semeru-containers/blob/master/README.md"
+RUN yum install -y tzdata openssl curl ca-certificates fontconfig gzip tar \
+    && yum clean all
 
 ENV JAVA_VERSION 17.0.5.0
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
+       aarch64|arm64) \
+         ESUM='2bd72afc9bf889e3ee3eabbc4ebd45947c6b72b8287e8e7d715163361ec87c3c'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.5%2B8_openj9-0.35.0/ibm-semeru-certified-jre_aarch64_linux_17.0.5.0.tar.gz'; \
+         ;; \ 
        amd64|x86_64) \
          ESUM='f27f2006cbe8604ea2cd32f728be5e7f42bd9eed3dc17457fba70c08e3998c15'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.5%2B8_openj9-0.35.0/ibm-semeru-certified-jre_x64_linux_17.0.5.0.tar.gz'; \
@@ -113,5 +109,3 @@ RUN set -eux; \
     \
     echo "SCC generation phase completed";
 
-CMD ["jshell"]
-USER 1001
