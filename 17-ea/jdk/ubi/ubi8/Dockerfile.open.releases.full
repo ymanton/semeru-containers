@@ -32,7 +32,7 @@ RUN dnf install -y \
 
 LABEL name="IBM Semeru Runtime EA" \
       vendor="International Business Machines Corporation" \
-      version="17.0.6.6" \
+      version="17.0.6.10" \
       release="17" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
       summary="IBM Semeru Runtime EA Docker Image for OpenJDK with openj9 and ubi" \
@@ -59,19 +59,19 @@ RUN set -eux; \
     cp -R usr/local /usr; \
     echo /usr/local/lib64 > /etc/ld.so.conf.d/criu.conf; \
     ldconfig; \
-    setcap cap_checkpoint_restore,cap_sys_ptrace=eip /usr/local/sbin/criu; \
+    setcap cap_checkpoint_restore,cap_sys_ptrace,cap_setpcap=eip /usr/local/sbin/criu; \
     rm -fr criu criu.tar.gz;
 
 ENV PATH="/usr/local/sbin:$PATH"
 
-ENV JAVA_VERSION 17.0.6.6
+ENV JAVA_VERSION 17.0.6.10
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-         ESUM='8ead64de8d19a360eb819afd57cdc0b40eef23edeb9e2aef05036801cd2fd3c7'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-ea-binaries/releases/download/jdk-17.0.6%2B6_december_22-preview_1/ibm-semeru-open-ea-jdk_x64_linux_17.0.6_6_December_22-preview_1.tar.gz'; \
+         ESUM='22ebde695ebaa979187242b859349065b82e78cc7b6ca7c2c267320e604caf83'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-ea-binaries/releases/download/jdk-17.0.6%2B10_february_23-preview_1/ibm-semeru-open-ea-jdk_x64_linux_17.0.6_10_February_23-preview_1.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
