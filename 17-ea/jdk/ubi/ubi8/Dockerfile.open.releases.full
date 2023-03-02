@@ -43,8 +43,8 @@ RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-          CRIU_URL='https://na.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/3/criu.tar.gz'; \
-          CRIU_SHA_URL='https://na.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/3/criu.tar.gz.sha256.txt'; \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/3/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/3/criu.tar.gz.sha256.txt'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
@@ -52,8 +52,8 @@ RUN set -eux; \
          ;; \
     esac; \
     cd /tmp; \
-    curl -H X-JFrog-Art-Api:${ARTIFACTORY_TOKEN} -LfsSo criu.tar.gz ${CRIU_URL};\
-    curl -H X-JFrog-Art-Api:${ARTIFACTORY_TOKEN} -LfsSo criu.tar.gz.sha256.txt ${CRIU_SHA_URL};\
+    curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -LfsSo criu.tar.gz ${CRIU_URL}; \
+    curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -LfsSo criu.tar.gz.sha256.txt ${CRIU_SHA_URL}; \
     sha256sum -c criu.tar.gz.sha256.txt; \
     tar -xzf criu.tar.gz --strip-components=1; \
     cp -R usr/local /usr; \
