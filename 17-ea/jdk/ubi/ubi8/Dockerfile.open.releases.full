@@ -60,6 +60,9 @@ RUN set -eux; \
     echo /usr/local/lib64 > /etc/ld.so.conf.d/criu.conf; \
     ldconfig; \
     setcap cap_checkpoint_restore,cap_sys_ptrace,cap_setpcap=eip /usr/local/sbin/criu; \
+    mkdir -p /opt/criu; \
+    cp /usr/local/sbin/criu /opt/criu/criu; \
+    setcap cap_checkpoint_restore,cap_setpcap=eip /opt/criu/criu; \
     rm -fr criu criu.tar.gz;
 
 ENV PATH="/usr/local/sbin:$PATH"
