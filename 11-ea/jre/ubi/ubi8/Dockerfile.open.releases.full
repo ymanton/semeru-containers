@@ -1,4 +1,4 @@
-# (C) Copyright IBM Corporation 2022, 2023
+# (C) Copyright IBM Corporation 2023, 2023
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,8 +30,8 @@ RUN dnf install -y \
 
 LABEL name="IBM Semeru Runtime EA" \
       vendor="International Business Machines Corporation" \
-      version="17.0.6.10" \
-      release="17" \
+      version="11.0.18.10" \
+      release="11" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
       summary="IBM Semeru Runtime EA Docker Image for OpenJDK with openj9 and ubi" \
       description="For more information on this image please see https://github.com/ibmruntimes/semeru-containers/blob/master/README.md"
@@ -65,14 +65,14 @@ RUN set -eux; \
 
 ENV PATH="/usr/local/sbin:$PATH"
 
-ENV JAVA_VERSION 17.0.6.10
+ENV JAVA_VERSION 11.0.18.10
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-         ESUM='c1b4e1e3d24e1d27c99274e6744fc61a230171b59b2b4b298809ae61e9bd81f4'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-ea-binaries/releases/download/jdk-17.0.6%2B10_february_23-preview_1/ibm-semeru-open-ea-jre_x64_linux_17.0.6_10_February_23-preview_1.tar.gz'; \
+         ESUM='a8f19b8fe2b5292503b65df993ff5702c8e7d737b2bd8aede51151d9320528c4'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-ea-binaries/releases/download/jdk-11.0.18%2B10_february_23-preview_1/ibm-semeru-open-jre_x64_linux_11.0.18_10_February_23-preview_1.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
