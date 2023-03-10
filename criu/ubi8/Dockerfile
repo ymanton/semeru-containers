@@ -26,14 +26,10 @@ FROM registry.access.redhat.com/ubi8/ubi:latest
 ARG FTP3_USER="YOUR FTP3 USER NAME"
 ARG FTP3_PASSWORD="YOUR PASSWORD"
 
-ARG CRIU_REPO=https://github.com/checkpoint-restore/criu.git
+ARG CRIU_REPO=https://github.com/ibmruntimes/criu.git
 ARG CRIU_BRANCH=criu-dev
 # Last stable commit SHA
-ARG CRIU_SHA=f7bcd1c8c32bd04df72dfac71ba8da3dbd36b245
-
-# Cherry pick fix to restoring SO_BUF_LOCK (from developer fork)
-ARG CRIU_FIX_REPO=https://github.com/ymanton/criu.git
-ARG CRIU_FIX_SHA=d46233dc7775539c275710e18733ed9b5aceb153
+ARG CRIU_SHA
 
 # First compile criu required for checkpoint
 # CRIU dependencies
@@ -92,19 +88,10 @@ RUN cd /tmp; \
     git clone -b ${CRIU_BRANCH} ${CRIU_REPO}; \
     mv criu criu-build; \
     cd criu-build; \
-    git config --global user.email "build@example.com"; \
-    git config --global user.name "build"; \
-    if [ "x${CRIU_SHA}" == x ] ; then \
-        CRIU_SHA=$(git rev-parse HEAD); \
+    if [ "x${CRIU_SHA}" != x ] ; then \
+         git reset --hard ${CRIU_SHA}; \
     fi; \
-    git reset --hard ${CRIU_SHA}; \
-    if [ "x${CRIU_FIX_SHA}" != x ] ; then \
-        git remote add dev ${CRIU_FIX_REPO}; \
-        git fetch dev; \
-        git cherry-pick ${CRIU_FIX_SHA}; \
-    fi; \
-    make; \
-    make DESTDIR=/tmp/criu install-lib install-criu; \
+    make DESTDIR=/tmp/criu PREFIX=/usr/local LIBDIR=/usr/local/lib64 install-lib install-criu; \
     cd ../; \
     tar -czf criu.tar.gz criu; \
     sha256sum criu.tar.gz > criu.tar.gz.sha256.txt; \
