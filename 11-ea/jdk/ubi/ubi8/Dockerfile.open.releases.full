@@ -30,7 +30,7 @@ RUN dnf install -y \
 
 LABEL name="IBM Semeru Runtime EA" \
       vendor="International Business Machines Corporation" \
-      version="11.0.18.10" \
+      version="11.0.19.7" \
       release="11" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
       summary="IBM Semeru Runtime EA Docker Image for OpenJDK with openj9 and ubi" \
@@ -73,14 +73,14 @@ RUN set -eux; \
 
 ENV PATH="/usr/local/sbin:$PATH"
 
-ENV JAVA_VERSION 11.0.18.10
+ENV JAVA_VERSION 11.0.19.7
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-         ESUM='65ca889b0ed4fa11ff1d69228c77a475459ce10557dd5d963c2fa4b47852de77'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-ea-binaries/releases/download/jdk-11.0.18%2B10_march_23-preview_1/ibm-semeru-open-jdk_x64_linux_11.0.18_10_March_23-preview_1.tar.gz'; \
+         ESUM='3f8a59d43a599ae734ff10ec20a71c07b5b86305fdded142cfe57c48c6430a3e'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-ea-binaries/releases/download/jdk-11.0.19%2B7_april_23-preview_1/ibm-semeru-open-jdk_x64_linux_11.0.19_7_April_23-preview_1.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
