@@ -79,8 +79,8 @@ RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-         ESUM='3f8a59d43a599ae734ff10ec20a71c07b5b86305fdded142cfe57c48c6430a3e'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-ea-binaries/releases/download/jdk-11.0.19%2B7_april_23-preview_1/ibm-semeru-open-jdk_x64_linux_11.0.19_7_April_23-preview_1.tar.gz'; \
+         ESUM='f4861c852e706879693cc3a8d93ba8a9c0699c0f659f185775d6b6a0663fe045'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-ea-binaries/releases/download/jdk-11.0.19%2B7_may_23-preview_1/ibm-semeru-open-jdk_x64_linux_11.0.19_7_May_23-preview_1.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
