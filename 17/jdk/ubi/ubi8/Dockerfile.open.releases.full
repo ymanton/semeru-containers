@@ -15,10 +15,18 @@
 
 FROM registry.access.redhat.com/ubi8/ubi:latest
 
+# Artifactory credentials to download CRIU binary
+# Set your Artifactory credentials here or pass them at build time
+ARG ARTIFACTORY_TOKEN
+
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-RUN dnf install -y tzdata openssl curl ca-certificates fontconfig glibc-langpack-en gzip tar \
-    && dnf update -y; dnf clean all
+RUN dnf install -y \
+    # CRIU dependencies
+        iptables-libs jansson libibverbs libmnl libnet libnftnl libpcap nftables protobuf-c \
+    # Semeru dependencies
+        tzdata openssl curl ca-certificates fontconfig glibc-langpack-en gzip tar \
+    && dnf update -y; dnf clean all;
 
 LABEL name="IBM Semeru Runtime " \
       vendor="International Business Machines Corporation" \
@@ -28,26 +36,69 @@ LABEL name="IBM Semeru Runtime " \
       summary="IBM Semeru Runtime Docker Image for OpenJDK with openj9 and ubi" \
       description="For more information on this image please see https://github.com/ibmruntimes/openjdk-docker/blob/master/README.md"
 
+# Install CRIU
+RUN set -eux; \
+    ARCH="$(uname -m)"; \
+    case "${ARCH}" in \
+      amd64|x86_64|ppc64el|ppc64le|s390x) \
+        case "${ARCH}" in \
+        amd64|x86_64) \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/x64_linux/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/x64_linux/criu.tar.gz.sha256.txt'; \
+          ;; \
+        ppc64el|ppc64le) \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/ppc64le_linux/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/ppc64le_linux/criu.tar.gz.sha256.txt'; \
+          ;; \
+        s390x) \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/s390x_linux/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/s390x_linux/criu.tar.gz.sha256.txt'; \
+          ;; \
+        *) \
+          echo "CRIU is not supported on: ${ARCH}"; \
+          ;; \
+        esac; \
+        cd /tmp; \
+        curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -LfsSo criu.tar.gz ${CRIU_URL}; \
+        curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -LfsSo criu.tar.gz.sha256.txt ${CRIU_SHA_URL}; \
+        sha256sum -c criu.tar.gz.sha256.txt; \
+        tar -xzf criu.tar.gz --strip-components=1; \
+        cp -R usr/local /usr; \
+        echo /usr/local/lib64 > /etc/ld.so.conf.d/criu.conf; \
+        ldconfig; \
+        setcap cap_checkpoint_restore,cap_sys_ptrace,cap_setpcap=eip /usr/local/sbin/criu; \
+        mkdir -p /opt/criu; \
+        cp /usr/local/sbin/criu /opt/criu/criu; \
+        setcap cap_checkpoint_restore,cap_setpcap=eip /opt/criu/criu; \
+        rm -fr criu criu.tar.gz; \
+        ;; \
+      *) \
+        echo "CRIU is not supported on: ${ARCH}"; \
+        ;; \
+    esac;
+
+ENV PATH="/usr/local/sbin:$PATH"
+
 ENV JAVA_VERSION jdk-17.0.6+10_openj9-0.36.0
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        aarch64|arm64) \
-         ESUM='7c6ef5b4989313b2e64b77613c13ec66a3fe85429732f63b6fe9f410d9e37d3c'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.6%2B10_openj9-0.36.0/ibm-semeru-open-jdk_aarch64_linux_17.0.6_10_openj9-0.36.0.tar.gz'; \
+         ESUM='f1669d85687be17744ba835107504227caf03c00c88dba7461fda11a8c442734'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.7%2B7_openj9-0.38.0/ibm-semeru-open-jdk_aarch64_linux_17.0.7_7_openj9-0.38.0.tar.gz'; \
          ;; \
        amd64|x86_64) \
-         ESUM='ce39a4f7c2e08e56083f17f3e44c05e0fbbeba775e670f015a337679c99c54c6'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.6%2B10_openj9-0.36.0/ibm-semeru-open-jdk_x64_linux_17.0.6_10_openj9-0.36.0.tar.gz'; \
+         ESUM='b46177ab82a2506cb858894fafbbbb922bbeefa4be441796e0ef5a8029599dca'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.7%2B7_openj9-0.38.0/ibm-semeru-open-jdk_x64_linux_17.0.7_7_openj9-0.38.0.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='2c9066ec2a9e759b28f2c9e3dd1a72a3b4452216443c4bec5be0ce6d1bffca84'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.6%2B10_openj9-0.36.0/ibm-semeru-open-jdk_ppc64le_linux_17.0.6_10_openj9-0.36.0.tar.gz'; \
+         ESUM='5759bea739befea5730d5aedc51ebe4a2bd808914d0a6ceb7a1895d36f1b2066'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.7%2B7_openj9-0.38.0/ibm-semeru-open-jdk_ppc64le_linux_17.0.7_7_openj9-0.38.0.tar.gz'; \
          ;; \
        s390x) \
-         ESUM='ed7651d153fc876bb43ca6ac0f880a405060da71faae6bc198b235094fe381af'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.6%2B10_openj9-0.36.0/ibm-semeru-open-jdk_s390x_linux_17.0.6_10_openj9-0.36.0.tar.gz'; \
+         ESUM='a21823c8c400ba1535b2aace96b0de3ee36e0811d566ccf6cb06b15e9efe4906'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.7%2B7_openj9-0.38.0/ibm-semeru-open-jdk_s390x_linux_17.0.7_7_openj9-0.38.0.tar.gz'; \
          ;;\
        *) \
          echo "Unsupported arch: ${ARCH}"; \
