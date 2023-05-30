@@ -15,39 +15,90 @@
 
 FROM registry.access.redhat.com/ubi8/ubi:latest
 
+# Artifactory credentials to download CRIU binary
+# Set your Artifactory credentials here or pass them at build time
+ARG ARTIFACTORY_TOKEN
+
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-RUN dnf install -y tzdata openssl curl ca-certificates fontconfig glibc-langpack-en gzip tar \
-    && dnf clean all
+RUN dnf install -y \
+    # CRIU dependencies
+        iptables-libs jansson libibverbs libmnl libnet libnftnl libpcap nftables protobuf-c \
+    # Semeru dependencies
+        tzdata openssl curl ca-certificates fontconfig glibc-langpack-en gzip tar \
+    && dnf update -y; dnf clean all;
 
 LABEL name="IBM Semeru Runtime Open Edition" \
       vendor="International Business Machines Corporation" \
-      version="jdk-17.0.6+10_openj9-0.36.0" \
+      version="jdk-17.0.7+7_openj9-0.38.0" \
       release="17" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
       summary="IBM Semeru Runtime Docker Image for OpenJDK with openj9 and ubi" \
       description="For more information on this image please see https://github.com/ibmruntimes/semeru-containers/blob/master/README.md"
 
-ENV JAVA_VERSION jdk-17.0.6+10_openj9-0.36.0
+# Install CRIU
+RUN set -eux; \
+    ARCH="$(uname -m)"; \
+    case "${ARCH}" in \
+      amd64|x86_64|ppc64el|ppc64le|s390x) \
+        case "${ARCH}" in \
+        amd64|x86_64) \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/x64_linux/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/x64_linux/criu.tar.gz.sha256.txt'; \
+          ;; \
+        ppc64el|ppc64le) \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/ppc64le_linux/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/ppc64le_linux/criu.tar.gz.sha256.txt'; \
+          ;; \
+        s390x) \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/s390x_linux/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/s390x_linux/criu.tar.gz.sha256.txt'; \
+          ;; \
+        *) \
+          echo "CRIU is not supported on: ${ARCH}"; \
+          ;; \
+        esac; \
+        cd /tmp; \
+        curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -LfsSo criu.tar.gz ${CRIU_URL}; \
+        curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -LfsSo criu.tar.gz.sha256.txt ${CRIU_SHA_URL}; \
+        sha256sum -c criu.tar.gz.sha256.txt; \
+        tar -xzf criu.tar.gz --strip-components=1; \
+        cp -R usr/local /usr; \
+        echo /usr/local/lib64 > /etc/ld.so.conf.d/criu.conf; \
+        ldconfig; \
+        setcap cap_checkpoint_restore,cap_sys_ptrace,cap_setpcap=eip /usr/local/sbin/criu; \
+        mkdir -p /opt/criu; \
+        cp /usr/local/sbin/criu /opt/criu/criu; \
+        setcap cap_checkpoint_restore,cap_setpcap=eip /opt/criu/criu; \
+        rm -fr criu criu.tar.gz; \
+        ;; \
+      *) \
+        echo "CRIU is not supported on: ${ARCH}"; \
+        ;; \
+    esac;
+
+ENV PATH="/usr/local/sbin:$PATH"
+
+ENV JAVA_VERSION jdk-17.0.7+7_openj9-0.38.0
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        aarch64|arm64) \
-         ESUM='492bd87e39fc0eb78218746e98c4c0f6730af9c998b872c1a175c0e907d11510'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.6%2B10_openj9-0.36.0/ibm-semeru-open-jre_aarch64_linux_17.0.6_10_openj9-0.36.0.tar.gz'; \
+         ESUM='601dba428fe9d9b5a883aaccbdd37f88c1fb0da2e5b5de65b40cf0a4a0e5fccb'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.7%2B7_openj9-0.38.0/ibm-semeru-open-jre_aarch64_linux_17.0.7_7_openj9-0.38.0.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='f1342b0a8b472d2de6e882030d2797b9c37e1cd7a90e4cb0c3bd969d4cf8158c'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.6%2B10_openj9-0.36.0/ibm-semeru-open-jre_ppc64le_linux_17.0.6_10_openj9-0.36.0.tar.gz'; \
+         ESUM='dee6b87258ceba918543956dddf97291cbc2735ffa0288d25239a07c7766d567'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.7%2B7_openj9-0.38.0/ibm-semeru-open-jre_ppc64le_linux_17.0.7_7_openj9-0.38.0.tar.gz'; \
          ;; \
        amd64|x86_64) \
-         ESUM='69ca1728f9aad7031908bd9a939b5a9a9c5e931d65bb5c72cbe6f599c7d00cc6'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.6%2B10_openj9-0.36.0/ibm-semeru-open-jre_x64_linux_17.0.6_10_openj9-0.36.0.tar.gz'; \
+         ESUM='ffda41aa8390d14edbce1775d652f0e4e779df025ac1404c1970802697963aab'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.7%2B7_openj9-0.38.0/ibm-semeru-open-jre_x64_linux_17.0.7_7_openj9-0.38.0.tar.gz'; \
          ;; \
        s390x) \
-         ESUM='542359aebfb91b6605c67db6523b2ce154bda63f7fa8a6c243944b2091f4eb2b'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.6%2B10_openj9-0.36.0/ibm-semeru-open-jre_s390x_linux_17.0.6_10_openj9-0.36.0.tar.gz'; \
+         ESUM='ee08d6830990562fcc45bec336748390d15357028d3ca0cf4a78bcea7bdfaefe'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.7%2B7_openj9-0.38.0/ibm-semeru-open-jre_s390x_linux_17.0.7_7_openj9-0.38.0.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
