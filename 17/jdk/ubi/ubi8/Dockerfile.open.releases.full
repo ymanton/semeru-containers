@@ -30,7 +30,7 @@ RUN dnf install -y \
 
 LABEL name="IBM Semeru Runtime " \
       vendor="International Business Machines Corporation" \
-      version="jdk-17.0.6+10_openj9-0.36.0" \
+      version="jdk-17.0.7+7_openj9-0.38.0" \
       release="17" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
       summary="IBM Semeru Runtime Docker Image for OpenJDK with openj9 and ubi" \
@@ -79,7 +79,7 @@ RUN set -eux; \
 
 ENV PATH="/usr/local/sbin:$PATH"
 
-ENV JAVA_VERSION jdk-17.0.6+10_openj9-0.36.0
+ENV JAVA_VERSION jdk-17.0.7+7_openj9-0.38.0
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
