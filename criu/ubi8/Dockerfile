@@ -13,27 +13,44 @@
 # limitations under the License.
 #
 
-################################################################################
-# Requires FTP3 credentials for ftp3.linux.ibm.com
-# Set credentials here or at build time using --build-arg option,
-# e.g. docker build --build-arg FTP3_USER=<user name> --build-arg FTP3_PASSWORD=<password> -f Dockerfile .
-################################################################################
+#######################################################################################################################
+# docker build --build-arg CRIU_REPO=<repo> --build-arg CRIU_BRANCH=<branch> --build-arg CRIU_SHA=<sha> -f Dockerfile .
+#######################################################################################################################
 
 FROM registry.access.redhat.com/ubi8/ubi:latest
-
-# Must have FTP3 account
-# Set your FTP3 credentials here or pass them at build time
-ARG FTP3_USER="YOUR FTP3 USER NAME"
-ARG FTP3_PASSWORD="YOUR PASSWORD"
 
 ARG CRIU_REPO=https://github.com/ibmruntimes/criu.git
 ARG CRIU_BRANCH=criu-dev
 # Last stable commit SHA
 ARG CRIU_SHA
 
-# First compile criu required for checkpoint
-# CRIU dependencies
-RUN dnf install -y \
+RUN dnf install -y yum-utils https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm \
+    && yum-config-manager --enable codeready-builder-for-rhel-8-$(uname -p)-rpms*
+
+# CRIU package dependencies
+RUN yum -y update && yum install -y \
+    glibc-locale-source \
+    kernel-devel \
+    make \
+    automake \
+    gcc \
+    gcc-c++ \
+    glibc \
+    vim \
+    git \
+    asciidoc \
+    gnutls-devel \
+    libcap-devel \
+    libnl3-devel \
+    nftables \
+    pkgconfig \
+    protobuf-c \
+    protobuf-c-devel \
+    python3 \
+    python3-protobuf \
+    libnet-devel \
+    nftables-devel \
+    protobuf-devel \
     iptables-libs \
     jansson \
     libibverbs \
@@ -43,46 +60,8 @@ RUN dnf install -y \
     libnftnl \
     libpcap \
     nftables \
-    protobuf-c
-
-# Download script to install CRIU build dependencies
-RUN cd /tmp \
-    && curl -k -u ${FTP3_USER}:${FTP3_PASSWORD} -o ibm-yum.sh ftp://ftp3.linux.ibm.com/redhat/ibm-yum.sh \
-    && chmod a+x ibm-yum.sh
-
-# CRIU build dependencies
-
-RUN set -eux; \
-    export FTP3USER=${FTP3_USER} \
-    && export FTP3PASS=${FTP3_PASSWORD} \
-    && /tmp/ibm-yum.sh install -y \
-        glibc-locale-source \
-        kernel-devel \
-        make \
-        automake \
-        gcc \
-        gcc-c++ \
-        glibc \
-        vim \
-        git \
-        asciidoc \
-        gnutls-devel \
-        libcap-devel \
-        libnet-devel \
-        libnl3-devel \
-        nftables \
-        nftables-devel \
-        pkgconfig \
-        protobuf-c \
-        protobuf-c-devel \
-        protobuf-devel \
-        python3 \
-        python3-protobuf \
-        xmlto \
-    && unset FTP3PASS \
-    && unset FTP3USER \
-    && cd ../ \
-    && rm -f ibm-yum.sh
+    protobuf-c \
+    xmlto
 
 RUN cd /tmp; \
     git clone -b ${CRIU_BRANCH} ${CRIU_REPO}; \
