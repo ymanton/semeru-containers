@@ -15,6 +15,10 @@
 
 FROM registry.access.redhat.com/ubi9/ubi:latest
 
+# Artifactory credentials to download CRIU binary
+# Set your Artifactory credentials here or pass them at build time
+ARG ARTIFACTORY_TOKEN
+
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
 RUN dnf install -y tzdata openssl ca-certificates fontconfig glibc-langpack-en gzip tar \
@@ -159,3 +163,5 @@ RUN set -eux; \
     \
     echo "SCC generation phase completed";
 
+CMD ["jshell"]
+USER 1001
