@@ -30,7 +30,7 @@ RUN dnf install -y \
 
 LABEL name="IBM Semeru Runtime Open Edition" \
       vendor="International Business Machines Corporation" \
-      version="jdk-11.0.18+10_openj9-0.36.0" \
+      version="jdk-11.0.19+7_openj9-0.38.0" \
       release="11" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
       summary="IBM Semeru Runtime Docker Image for OpenJDK with openj9 and ubi" \
@@ -167,3 +167,5 @@ RUN set -eux; \
     \
     echo "SCC generation phase completed";
 
+CMD ["jshell"]
+USER 1001

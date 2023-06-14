@@ -167,3 +167,5 @@ RUN set -eux; \
     \
     echo "SCC generation phase completed";
 
+CMD ["jshell"]
+USER 1001

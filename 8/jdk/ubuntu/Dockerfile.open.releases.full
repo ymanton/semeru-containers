@@ -108,4 +108,3 @@ RUN set -eux; \
     fi; \
     \
     echo "SCC generation phase completed";
-
