@@ -15,10 +15,18 @@
 
 FROM registry.access.redhat.com/ubi8/ubi:latest
 
+# Artifactory credentials to download CRIU binary
+# Set your Artifactory credentials here or pass them at build time
+ARG ARTIFACTORY_TOKEN
+
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-RUN dnf install -y tzdata openssl curl ca-certificates fontconfig glibc-langpack-en gzip tar \
-    && dnf update -y; dnf clean all
+RUN dnf install -y \
+    # CRIU dependencies
+        iptables-libs jansson libibverbs libmnl libnet libnftnl libpcap nftables protobuf-c \
+    # Semeru dependencies
+        tzdata openssl curl ca-certificates fontconfig glibc-langpack-en gzip tar \
+    && dnf update -y; dnf clean all;
 
 LABEL name="IBM Semeru Runtime Certified Edition" \
       vendor="International Business Machines Corporation" \
@@ -27,6 +35,53 @@ LABEL name="IBM Semeru Runtime Certified Edition" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
       summary="IBM Semeru Runtime Certified Docker Image for OpenJDK with openj9 and ubi" \
       description="For more information on this image please see https://github.com/ibmruntimes/semeru-containers/blob/master/README.md"
+
+# Install CRIU
+RUN set -eux; \
+    ARCH="$(uname -m)"; \
+    case "${ARCH}" in \
+      amd64|x86_64|ppc64el|ppc64le|s390x|aarch64|arm64) \
+        case "${ARCH}" in \
+        amd64|x86_64) \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/x64_linux/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/x64_linux/criu.tar.gz.sha256.txt'; \
+          ;; \
+        ppc64el|ppc64le) \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/ppc64le_linux/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/ppc64le_linux/criu.tar.gz.sha256.txt'; \
+          ;; \
+        s390x) \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/s390x_linux/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/s390x_linux/criu.tar.gz.sha256.txt'; \
+          ;; \
+        aarch64|arm64) \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/19/aarch64_linux/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/19/aarch64_linux/criu.tar.gz.sha256.txt'; \
+          ;; \
+        *) \
+          echo "CRIU is not supported on: ${ARCH}"; \
+          ;; \
+        esac; \
+        cd /tmp; \
+        curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -LfsSo criu.tar.gz ${CRIU_URL}; \
+        curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -LfsSo criu.tar.gz.sha256.txt ${CRIU_SHA_URL}; \
+        sha256sum -c criu.tar.gz.sha256.txt; \
+        tar -xzf criu.tar.gz --strip-components=1; \
+        cp -R usr/local /usr; \
+        echo /usr/local/lib64 > /etc/ld.so.conf.d/criu.conf; \
+        ldconfig; \
+        setcap cap_checkpoint_restore,cap_sys_ptrace,cap_setpcap=eip /usr/local/sbin/criu; \
+        mkdir -p /opt/criu; \
+        cp /usr/local/sbin/criu /opt/criu/criu; \
+        setcap cap_checkpoint_restore,cap_setpcap=eip /opt/criu/criu; \
+        rm -fr criu criu.tar.gz; \
+        ;; \
+      *) \
+        echo "CRIU is not supported on: ${ARCH}"; \
+        ;; \
+    esac;
+
+ENV PATH="/usr/local/sbin:$PATH"
 
 ENV JAVA_VERSION 17.0.7.0
 
