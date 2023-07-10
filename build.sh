@@ -28,7 +28,7 @@ dloc=$2
 dockerFile="Dockerfile.open.releases.full"
 dfile=$dloc$dockerFile
 containerEngine=docker
-artifactoryToken=$3
+criu_secrets=$3
 
 tag=`echo $image | cut -d ":" -f2`
 
@@ -38,14 +38,14 @@ then
    then
       echo "Dockerfile location not provided, using \".\". No artifactory token provided, using \"\""
       dloc="."
-      artifactoryToken=""
+      criu_secrets=""
    else
       if [ $# == 2 ]
       then
-         echo "No artifactory token provided, using \"\""
-         artifactoryToken=""
+         echo "No CRIU secrets file provided using \"\""
+         criu_secrets=""
       else
-         echo "Usage : build.sh <Image name> <Dockerfile location> <artifactory token>"
+         echo "Usage : build.sh <Image name> <Dockerfile location> <criu_secrets_file>"
          exit 1
       fi
    fi
@@ -59,7 +59,7 @@ if [[ $VAR == *"17-ea"* ]]; then
   containerEngine=podman
 fi
 
-$containerEngine build --no-cache --pull -t $image -f $dfile $dloc --build-arg ARTIFACTORY_TOKEN=$artifactoryToken 2>&1 | tee build_$tag.log
+$containerEngine build --no-cache --pull -t $image -f $dfile $dloc --secret id=criu_secrets,src=$criu_secrets 2>&1 | tee build_$tag.log
 
 if [ $? = 0 ]
 then

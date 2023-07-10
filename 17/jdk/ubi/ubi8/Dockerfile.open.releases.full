@@ -15,10 +15,6 @@
 
 FROM registry.access.redhat.com/ubi8/ubi:latest
 
-# Artifactory credentials to download CRIU binary
-# Set your Artifactory credentials here or pass them at build time
-ARG ARTIFACTORY_TOKEN
-
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
 RUN dnf install -y \
@@ -30,14 +26,15 @@ RUN dnf install -y \
 
 LABEL name="IBM Semeru Runtime " \
       vendor="International Business Machines Corporation" \
-      version="jdk-17.0.6+10_openj9-0.36.0" \
+      version="jdk-17.0.7+7_openj9-0.38.0" \
       release="17" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
       summary="IBM Semeru Runtime Docker Image for OpenJDK with openj9 and ubi" \
       description="For more information on this image please see https://github.com/ibmruntimes/openjdk-docker/blob/master/README.md"
 
 # Install CRIU
-RUN set -eux; \
+RUN --mount=type=secret,id=criu_secrets source /run/secrets/criu_secrets; \
+    set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
       amd64|x86_64|ppc64el|ppc64le|s390x) \
@@ -59,8 +56,8 @@ RUN set -eux; \
           ;; \
         esac; \
         cd /tmp; \
-        curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -LfsSo criu.tar.gz ${CRIU_URL}; \
-        curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -LfsSo criu.tar.gz.sha256.txt ${CRIU_SHA_URL}; \
+        curl -H "${CRIU_AUTH_HEADER}" -LfsSo criu.tar.gz ${CRIU_URL}; \
+        curl -H "${CRIU_AUTH_HEADER}" -LfsSo criu.tar.gz.sha256.txt ${CRIU_SHA_URL}; \
         sha256sum -c criu.tar.gz.sha256.txt; \
         tar -xzf criu.tar.gz --strip-components=1; \
         cp -R usr/local /usr; \
@@ -79,7 +76,7 @@ RUN set -eux; \
 
 ENV PATH="/usr/local/sbin:$PATH"
 
-ENV JAVA_VERSION jdk-17.0.6+10_openj9-0.36.0
+ENV JAVA_VERSION jdk-17.0.7+7_openj9-0.38.0
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
