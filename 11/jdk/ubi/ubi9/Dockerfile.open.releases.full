@@ -15,10 +15,6 @@
 
 FROM registry.access.redhat.com/ubi9/ubi:latest
 
-# Artifactory credentials to download CRIU binary
-# Set your Artifactory credentials here or pass them at build time
-ARG ARTIFACTORY_TOKEN
-
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
 RUN dnf install -y tzdata openssl ca-certificates fontconfig glibc-langpack-en gzip tar \
@@ -33,10 +29,10 @@ LABEL name="IBM Semeru Runtime " \
       description="For more information on this image please see https://github.com/ibmruntimes/openjdk-docker/blob/master/README.md"
 
 # Install CRIU
-RUN set -eux; \
+RUN --mount=type=secret,id=criu_secrets source /run/secrets/criu_secrets; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
-      amd64|x86_64|ppc64el|ppc64le|s390x) \
+      amd64|x86_64|ppc64el|ppc64le|s390x|aarch64|arm64) \
         case "${ARCH}" in \
         amd64|x86_64) \
           CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/x64_linux/criu.tar.gz'; \
@@ -50,13 +46,17 @@ RUN set -eux; \
           CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/s390x_linux/criu.tar.gz'; \
           CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/s390x_linux/criu.tar.gz.sha256.txt'; \
           ;; \
+        aarch64|arm64) \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/19/aarch64_linux/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/19/aarch64_linux/criu.tar.gz.sha256.txt'; \
+          ;; \
         *) \
           echo "CRIU is not supported on: ${ARCH}"; \
           ;; \
         esac; \
         cd /tmp; \
-        curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -LfsSo criu.tar.gz ${CRIU_URL}; \
-        curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -LfsSo criu.tar.gz.sha256.txt ${CRIU_SHA_URL}; \
+        curl -H "${CRIU_AUTH_HEADER}" -LfsSo criu.tar.gz ${CRIU_URL}; \
+        curl -H "${CRIU_AUTH_HEADER}" -LfsSo criu.tar.gz.sha256.txt ${CRIU_SHA_URL}; \
         sha256sum -c criu.tar.gz.sha256.txt; \
         tar -xzf criu.tar.gz --strip-components=1; \
         cp -R usr/local /usr; \
