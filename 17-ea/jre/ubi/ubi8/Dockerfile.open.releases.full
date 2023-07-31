@@ -15,10 +15,6 @@
 
 FROM registry.access.redhat.com/ubi8/ubi:latest
 
-# Artifactory credentials to download CRIU binary
-# Set your Artifactory credentials here or pass them at build time
-ARG ARTIFACTORY_TOKEN
-
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
 RUN dnf install -y \
@@ -30,27 +26,32 @@ RUN dnf install -y \
 
 LABEL name="IBM Semeru Runtime EA" \
       vendor="International Business Machines Corporation" \
-      version="17.0.7.7" \
+      version="17.0.8.6" \
       release="17" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
       summary="IBM Semeru Runtime EA Docker Image for OpenJDK with openj9 and ubi" \
       description="For more information on this image please see https://github.com/ibmruntimes/semeru-containers/blob/master/README.md"
 
 # Install CRIU
-RUN set -eux; \
+RUN --mount=type=secret,id=criu_secrets source /run/secrets/criu_secrets; \
+    set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
         amd64|x86_64) \
-          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/x64_linux/criu.tar.gz'; \
-          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/x64_linux/criu.tar.gz.sha256.txt'; \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/23/x64_linux/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/23/x64_linux/criu.tar.gz.sha256.txt'; \
           ;; \
         ppc64el|ppc64le) \
-          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/ppc64le_linux/criu.tar.gz'; \
-          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/ppc64le_linux/criu.tar.gz.sha256.txt'; \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/23/ppc64le_linux/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/23/ppc64le_linux/criu.tar.gz.sha256.txt'; \
           ;; \
         s390x) \
-          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/s390x_linux/criu.tar.gz'; \
-          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/17/s390x_linux/criu.tar.gz.sha256.txt'; \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/23/s390x_linux/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/23/s390x_linux/criu.tar.gz.sha256.txt'; \
+          ;; \
+        aarch64) \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/19/aarch64_linux/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/19/aarch64_linux/criu.tar.gz.sha256.txt'; \
           ;; \
         *) \
           echo "Unsupported arch: ${ARCH}"; \
@@ -58,8 +59,8 @@ RUN set -eux; \
           ;; \
     esac; \
     cd /tmp; \
-    curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -LfsSo criu.tar.gz ${CRIU_URL}; \
-    curl -H "Authorization: Bearer ${ARTIFACTORY_TOKEN}" -LfsSo criu.tar.gz.sha256.txt ${CRIU_SHA_URL}; \
+    curl -H "${CRIU_AUTH_HEADER}" -LfsSo criu.tar.gz ${CRIU_URL}; \
+    curl -H "${CRIU_AUTH_HEADER}" -LfsSo criu.tar.gz.sha256.txt ${CRIU_SHA_URL}; \
     sha256sum -c criu.tar.gz.sha256.txt; \
     tar -xzf criu.tar.gz --strip-components=1; \
     cp -R usr/local /usr; \
@@ -73,14 +74,14 @@ RUN set -eux; \
 
 ENV PATH="/usr/local/sbin:$PATH"
 
-ENV JAVA_VERSION 17.0.7.7
+ENV JAVA_VERSION 17.0.8.6
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-         ESUM='a6b73e76edd43a51e96a1e68ca4fb72eefff6f804d12e9f5bebb9010466505a4'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-ea-binaries/releases/download/jdk-17.0.7%2B7_may_23-preview_1/ibm-semeru-open-jre_x64_linux_17.0.7_7_May_23-preview_1.tar.gz'; \
+         ESUM='7be673978d0c4f7384671a25f99dfc2601536fd01a64ed0c215c69d944f67c5e'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.8%2B6_openj9-0.40.0-m2/ibm-semeru-open-jre_x64_linux_17.0.8_6_openj9-0.40.0-m2.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
