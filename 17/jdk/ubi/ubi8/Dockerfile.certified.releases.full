@@ -19,7 +19,7 @@ ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
 RUN dnf install -y \
     # CRIU dependencies
-        iptables-libs jansson libibverbs libmnl libnet libnftnl libpcap nftables protobuf-c \
+        iptables-libs iptables jansson libibverbs libmnl libnet libnftnl libpcap nftables protobuf-c \
     # Semeru dependencies
         tzdata openssl curl ca-certificates fontconfig glibc-langpack-en gzip tar \
     && dnf update -y; dnf clean all;
@@ -87,7 +87,7 @@ RUN set -eux; \
        aarch64|arm64) \
          ESUM='a1c9ed36f803789871b6db4c202746a99dd514d6bf515287a83ba4644f6cb839'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.7%2B7_openj9-0.38.0/ibm-semeru-certified-jdk_aarch64_linux_17.0.7.0.tar.gz'; \
-         ;; \ 
+         ;; \
        amd64|x86_64) \
          ESUM='bcb22eef82e1ddad1e581c28b6aea5a163cdba7046001c36c242ffa336fb6439'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.7%2B7_openj9-0.38.0/ibm-semeru-certified-jdk_x64_linux_17.0.7.0.tar.gz'; \
