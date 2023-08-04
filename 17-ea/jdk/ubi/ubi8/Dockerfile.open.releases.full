@@ -17,7 +17,7 @@ FROM registry.access.redhat.com/ubi8/ubi:latest as glibc-build
 
 RUN dnf config-manager --enable ubi-8-baseos-source \
     && dnf download --source glibc \
-    && dnf --enablerepo=codeready-builder-for-rhel-8-x86_64-rpms builddep -y glibc \
+    && dnf --enablerepo=codeready-builder-for-rhel-8-$(uname -m)-rpms builddep -y glibc \
     && dnf install -y rpm-build \
     && rpm -ivh glibc-*.src.rpm \
     && rpmbuild -bp ~/rpmbuild/SPECS/glibc.spec
