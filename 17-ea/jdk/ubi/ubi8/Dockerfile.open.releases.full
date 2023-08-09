@@ -41,7 +41,7 @@ FROM registry.access.redhat.com/ubi8/ubi:latest
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-COPY --from=glibc-build /tmp/patched-glibc /tmp
+COPY --from=glibc-build /tmp/patched-glibc /tmp/patched-glibc
 
 # --nodeps needed because building via short-circuit inserts a fake dependency on "rpmlib(ShortCircuited)" because by design packages built via short-circuit are not intended to be installed.
 # --force is needed because rebuilt packages have the same version number as existing installed packages.
