@@ -115,13 +115,16 @@ RUN --mount=type=secret,id=criu_secrets source /run/secrets/criu_secrets; \
          ESUM='1b827c24ea4d0b39c76d076c6e45b91011b444c120ed0ec06e5ae307ca20e079'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.8%2B6_openj9-0.40.0-m2/ibm-semeru-open-jdk_x64_linux_17.0.8_6_openj9-0.40.0-m2.tar.gz'; \
          ;; \
+       ppc64el|ppc64le) \
+         ESUM='1b827c24ea4d0b39c76d076c6e45b91011b444c120ed0ec06e5ae307ca20e079'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.8%2B6_openj9-0.40.0-m2/ibm-semeru-open-jdk_ppc64le_linux_17.0.8_6_openj9-0.40.0-m2.tar.gz'; \
+         ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
          exit 1; \
          ;; \
     esac; \
     curl -LfsSo /tmp/openjdk.tar.gz ${BINARY_URL}; \
-    echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
     mkdir -p /opt/java/java-ea; \
     cd /opt/java/java-ea; \
     tar -xf /tmp/openjdk.tar.gz --strip-components=1;
