@@ -22,6 +22,10 @@ RUN dnf config-manager --enable ubi-8-baseos-source \
     && rpm -ivh glibc-*.src.rpm \
     && rpmbuild -bp ~/rpmbuild/SPECS/glibc.spec
 
+COPY glibc-ppc-s390-tunables.patch /tmp/glibc-ppc-s390-tunables.patch
+
+RUN patch -p0 -d ~/rpmbuild/BUILD < /tmp/glibc-ppc-s390-tunables.patch
+
 # If coreutils-single is installed we need to replace it with coreutils, otherwise the glibc self-test that rpmbuild runs will fail.
 # coreutils-single provides /bin/true as a shell script, but glibc needs a real binary to test against.
 RUN dnf install -y --allowerasing coreutils
