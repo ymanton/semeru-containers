@@ -15,25 +15,28 @@
 
 FROM registry.access.redhat.com/ubi8/ubi:latest as glibc-build
 
+# If coreutils-single is installed we need to replace it with coreutils, otherwise the glibc self-test that rpmbuild runs will fail.
+# coreutils-single provides /bin/true as a shell script, but glibc needs a real binary to test against.
 RUN dnf config-manager --enable ubi-8-baseos-source \
     && dnf download --source glibc \
     && dnf --enablerepo=codeready-builder-for-rhel-8-$(uname -m)-rpms builddep -y glibc \
     && dnf install -y rpm-build \
+    && dnf install -y --allowerasing coreutils \
     && rpm -ivh glibc-*.src.rpm \
     && rpmbuild -bp ~/rpmbuild/SPECS/glibc.spec
 
-COPY glibc-ppc-s390-tunables.patch /tmp/glibc-ppc-s390-tunables.patch
+COPY instanton-glibc-ppc64le-s390x-tunables-hwcaps.patch /tmp/glibc-patches/instanton-glibc-ppc64le-s390x-tunables-hwcaps.patch
 
-RUN patch -p0 -d ~/rpmbuild/BUILD < /tmp/glibc-ppc-s390-tunables.patch
-
-# If coreutils-single is installed we need to replace it with coreutils, otherwise the glibc self-test that rpmbuild runs will fail.
-# coreutils-single provides /bin/true as a shell script, but glibc needs a real binary to test against.
-RUN dnf install -y --allowerasing coreutils
+RUN patch -p0 -d ~/rpmbuild/BUILD < /tmp/glibc-patches/instanton-glibc-ppc64le-s390x-tunables-hwcaps.patch
 
 RUN rpmbuild --short-circuit -bc ~/rpmbuild/SPECS/glibc.spec \
     && rpmbuild --short-circuit -bi ~/rpmbuild/SPECS/glibc.spec \
     && rpmbuild --short-circuit -bb ~/rpmbuild/SPECS/glibc.spec
 
+# Rebuilding the glibc source RPM results in many binary RPMs being produced, not all of which are currently installed.
+# Find which ones are currently installed and move them for the next stage to install.
+# Strictly speaking we should make all of these RPMs available to the next stage and do the check there, but we assume
+# the check will return the same answer in both stages and minimize the size increase of the final image.
 RUN ls ~/rpmbuild/RPMS/$(uname -m)/ | sed "s/^\(.\+\)-[0-9]\+\.[0-9]\+.*\.el.\.$(uname -m)\.rpm$/\1/" | uniq | tee built-packages \
     && awk '{ print $0 "-[0-9]\\+\\.[0-9]\\+" }' built-packages | tee built-packages.regex \
     && rpm -qa | grep -f built-packages.regex | tee built-packages-already-installed \
