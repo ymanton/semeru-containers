@@ -22,22 +22,22 @@ RUN apt-get update \
     && locale-gen en_US.UTF-8 \
     && rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_VERSION 11.0.19.0
+ENV JAVA_VERSION 11.0.20.0
 
 RUN set -eux; \
     ARCH="$(dpkg --print-architecture)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-         ESUM='1d344aca4a9d2cb6be1d6e6a324e29a9803456cdc964c48963b2f1b53bb251ed'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.19%2B7_openj9-0.38.0/ibm-semeru-certified-jre_x64_linux_11.0.19.0.tar.gz'; \
+         ESUM='24a42de53f9f59db82533b3c0619d195ad8c782609a5230bdf1ee41c0ea9bec9'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.20%2B8_openj9-0.40.0/ibm-semeru-certified-jre_x64_linux_11.0.20.0.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='788496e440a7eae1b5234bcb1d1ca591a2c0ada946a93828e36615cf1e6269df'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.19%2B7_openj9-0.38.0/ibm-semeru-certified-jre_ppc64le_linux_11.0.19.0.tar.gz'; \
+         ESUM='dc3d9129d35c0210d597c907bdd5fe6220099d7ff0959b7241806c6e06d2014a'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.20%2B8_openj9-0.40.0/ibm-semeru-certified-jre_ppc64le_linux_11.0.20.0.tar.gz'; \
          ;; \
        s390x) \
-         ESUM='7a331c0e11c52dcdd2c56b21be864b061f1c1c650c790286073c6d4dc9b999e5'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.19%2B7_openj9-0.38.0/ibm-semeru-certified-jre_s390x_linux_11.0.19.0.tar.gz'; \
+         ESUM='486e5d0e9003b96a9599d600af2bb529d67c50ca81406acc09afd7d708e3e92a'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.20%2B8_openj9-0.40.0/ibm-semeru-certified-jre_s390x_linux_11.0.20.0.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \

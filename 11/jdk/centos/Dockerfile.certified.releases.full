@@ -20,22 +20,22 @@ ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 RUN yum install -y tzdata openssl curl ca-certificates fontconfig gzip tar \
     && yum clean all
 
-ENV JAVA_VERSION 11.0.19.0
+ENV JAVA_VERSION 11.0.20.0
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-         ESUM='4f646a746b7956c977558ab181fe57d8239b33f44756f18087a1ff6c8c414e28'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.19%2B7_openj9-0.38.0/ibm-semeru-certified-jdk_x64_linux_11.0.19.0-archive.bin'; \
+         ESUM='9ceb1281b47599ddc32a2cc3828c2005632e4e2e5f6a99a9129473b9cd819ca3'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.20%2B8_openj9-0.40.0/ibm-semeru-certified-jdk_x64_linux_11.0.20.0-archive.bin'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='905e1e2eea6443b9e020a88073c57c89b7dffa695f6d1aa05cd93a246addaa7b'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.19%2B7_openj9-0.38.0/ibm-semeru-certified-jdk_ppc64le_linux_11.0.19.0-archive.bin'; \
+         ESUM='97928937533687a6b7fc41ef3f9c8e480b821b8cfb81a272a700fe42f9f00eda'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.20%2B8_openj9-0.40.0/ibm-semeru-certified-jdk_ppc64le_linux_11.0.20.0-archive.bin'; \
          ;; \
        s390x) \
-         ESUM='c543fb0048b5d90e85828ccb6147cbdd2161a21ff46c3e1de9c6e10ad45eb77b'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.19%2B7_openj9-0.38.0/ibm-semeru-certified-jdk_s390x_linux_11.0.19.0-archive.bin'; \
+         ESUM='42449c943c7788e64b6aaa466d3dd3cf9dbbb2a0dbff7be6aac0899c4395c251'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.20%2B8_openj9-0.40.0/ibm-semeru-certified-jdk_s390x_linux_11.0.20.0-archive.bin'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
