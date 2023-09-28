@@ -42,8 +42,8 @@ RUN --mount=type=secret,id=criu_secrets source /run/secrets/criu_secrets; \
           CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/28/x64_linux/criu.tar.gz.sha256.txt'; \
           ;; \
         ppc64el|ppc64le) \
-          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/28/ppc64le_linux/criu.tar.gz'; \
-          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/28/ppc64le_linux/criu.tar.gz.sha256.txt'; \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/30/ppc64le_linux/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/30/ppc64le_linux/criu.tar.gz.sha256.txt'; \
           ;; \
         s390x) \
           CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/28/s390x_linux/criu.tar.gz'; \
@@ -83,6 +83,10 @@ RUN --mount=type=secret,id=criu_secrets source /run/secrets/criu_secrets; \
        amd64|x86_64) \
          ESUM='1b827c24ea4d0b39c76d076c6e45b91011b444c120ed0ec06e5ae307ca20e079'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.8%2B6_openj9-0.40.0-m2/ibm-semeru-open-jdk_x64_linux_17.0.8_6_openj9-0.40.0-m2.tar.gz'; \
+         ;; \
+       ppc64el|ppc64le) \
+         ESUM='0636198e6fa45bcb8cec2a52bf06cead6350ef4d9879534ce279ca9d6a29ffd0'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.9%2B5_openj9-0.41.0-m1/ibm-semeru-open-jdk_ppc64le_linux_17.0.9_5_openj9-0.41.0-m1.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
