@@ -22,32 +22,32 @@ RUN microdnf install -y tzdata openssl curl ca-certificates fontconfig glibc-lan
 
 LABEL name="IBM Semeru Runtime Certified Edition" \
       vendor="International Business Machines Corporation" \
-      version="17.0.8.0" \
+      version="17.0.8.1" \
       release="17" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
       summary="IBM Semeru Runtime Certified Docker Image for OpenJDK with openj9 and ubi-minimal" \
       description="For more information on this image please see https://github.com/ibmruntimes/semeru-containers/blob/master/README.md"
 
-ENV JAVA_VERSION 17.0.8.0
+ENV JAVA_VERSION 17.0.8.1
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        aarch64|arm64) \
-         ESUM='db6e49d032248ba370e775eabd0a7259e24557e2553e26552e9a8d1616e0949a'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.8%2B7_openj9-0.40.0/ibm-semeru-certified-jre_aarch64_linux_17.0.8.0.tar.gz'; \
+         ESUM='b727ac799e61b5e7775dfcb19f02b4fc2f9fd42b68c992725cbce1eb99df6cb1'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.8.1%2B1_openj9-0.40.0/ibm-semeru-certified-jre_aarch64_linux_17.0.8.1.tar.gz'; \
          ;; \
        amd64|x86_64) \
-         ESUM='449b480dc06d8a7c0e29f9ed068f6930c7e93670c52f1bd9a6210c1e717d7ea4'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.8%2B7_openj9-0.40.0/ibm-semeru-certified-jre_x64_linux_17.0.8.0.tar.gz'; \
+         ESUM='14d5f4dea56df8c1a94f8aa25bb4778bdbe5c31140e29e44b57fadf416288e5c'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.8.1%2B1_openj9-0.40.0/ibm-semeru-certified-jre_x64_linux_17.0.8.1.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='a391ce43d609c74566a6ee5fa9732254f12b78d4c6777f8904bd437268f9f617'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.8%2B7_openj9-0.40.0/ibm-semeru-certified-jre_ppc64le_linux_17.0.8.0.tar.gz'; \
+         ESUM='be189a744d7593dd420b97f9f548ca7625c8f5ca51c4783a0575858855d9daca'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.8.1%2B1_openj9-0.40.0/ibm-semeru-certified-jre_ppc64le_linux_17.0.8.1.tar.gz'; \
          ;; \
        s390x) \
-         ESUM='2b98533771c0f6d7c50701236efccb3957b1684a444d5e629d6af8e6dba4965a'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.8%2B7_openj9-0.40.0/ibm-semeru-certified-jre_s390x_linux_17.0.8.0.tar.gz'; \
+         ESUM='c3a6d26b7701f911ce0232992832534cf6b5facb90ff372fad4599ebe9c09038'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.8.1%2B1_openj9-0.40.0/ibm-semeru-certified-jre_s390x_linux_17.0.8.1.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
