@@ -12,6 +12,43 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+FROM registry.access.redhat.com/ubi9/ubi:latest as criu-build
+
+ARG CRIU_REPO=https://github.com/ibmruntimes/criu.git
+ARG CRIU_BRANCH=0.40.1-release
+ARG CRIU_SHA=HEAD
+ARG CRIU_DEBUG=1
+
+RUN source /etc/os-release \
+    dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-${VERSION_ID%.*}.noarch.rpm \
+    && dnf install -y --enablerepo="codeready-builder-for-rhel-${VERSION_ID%.*}-$(uname -m)-rpms" \
+        git \
+        make \
+        gcc \
+        pkg-config \
+        protobuf \
+        protobuf-devel \
+        protobuf-c-devel \
+        python3-protobuf \
+        # Add libbsd to CRIU dependencies installed in final image if building with libbsd-devel
+        #libbsd-devel \
+        iproute \
+        nftables \
+        libcap-devel \
+        libnet-devel \
+        libnl3-devel \
+        libaio-devel \
+        python3-pip \
+        python3-future \
+        asciidoc \
+        xmlto
+
+WORKDIR /criu-src
+
+RUN [ ! -e ./Makefile ] && git clone --branch "${CRIU_BRANCH}" "${CRIU_REPO}" . \
+    && git checkout ${CRIU_SHA}
+
+RUN make DEBUG=${CRIU_DEBUG} DESTDIR=/criu-install PREFIX=/usr/local install
 
 FROM registry.access.redhat.com/ubi9/ubi:latest
 
@@ -33,6 +70,8 @@ LABEL name="IBM Semeru Runtime " \
       description="For more information on this image please see https://github.com/ibmruntimes/openjdk-docker/blob/master/README.md"
 
 # Install CRIU
+COPY --from=criu-build /criu-install /
+
 RUN --mount=type=secret,id=criu_secrets source /run/secrets/criu_secrets; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
@@ -58,13 +97,16 @@ RUN --mount=type=secret,id=criu_secrets source /run/secrets/criu_secrets; \
           echo "CRIU is not supported on: ${ARCH}"; \
           ;; \
         esac; \
+        if [ ! -e /usr/local/sbin/criu ]; then \
         cd /tmp; \
         curl -H "${CRIU_AUTH_HEADER}" -LfsSo criu.tar.gz ${CRIU_URL}; \
         curl -H "${CRIU_AUTH_HEADER}" -LfsSo criu.tar.gz.sha256.txt ${CRIU_SHA_URL}; \
         sha256sum -c criu.tar.gz.sha256.txt; \
         tar -xzf criu.tar.gz --strip-components=1; \
         cp -R usr/local /usr; \
+        fi; \
         echo /usr/local/lib64 > /etc/ld.so.conf.d/criu.conf; \
+        echo /usr/local/lib >> /etc/ld.so.conf.d/criu.conf; \
         ldconfig; \
         setcap cap_checkpoint_restore,cap_sys_ptrace,cap_setpcap=eip /usr/local/sbin/criu; \
         mkdir -p /opt/criu; \
