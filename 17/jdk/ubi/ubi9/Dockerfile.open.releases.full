@@ -13,9 +13,48 @@
 # limitations under the License.
 #
 
+FROM registry.access.redhat.com/ubi9/ubi:latest as glibc-build
+
+# If coreutils-single is installed we need to replace it with coreutils, otherwise the glibc self-test that rpmbuild runs will fail.
+# coreutils-single provides /bin/true as a shell script, but glibc needs a real binary to test against.
+RUN source /etc/os-release \
+    && dnf config-manager --enable ubi-${VERSION_ID%.*}-baseos-source \
+    && dnf download --source glibc \
+    && dnf --enablerepo=codeready-builder-for-rhel-${VERSION_ID%.*}-$(uname -m)-rpms builddep -y glibc \
+    && dnf install -y rpm-build glibc-static \
+    && dnf install -y --allowerasing coreutils \
+    && rpm -ivh glibc-*.src.rpm \
+    && rpmbuild -bp ~/rpmbuild/SPECS/glibc.spec
+
+COPY instanton-glibc-ppc64le-s390x-tunables-hwcaps.patch /tmp/glibc-patches/instanton-glibc-ppc64le-s390x-tunables-hwcaps.patch
+
+RUN patch -p0 -d ~/rpmbuild/BUILD < /tmp/glibc-patches/instanton-glibc-ppc64le-s390x-tunables-hwcaps.patch
+
+RUN rpmbuild --short-circuit -bc ~/rpmbuild/SPECS/glibc.spec \
+    && rpmbuild --short-circuit -bi ~/rpmbuild/SPECS/glibc.spec \
+    && rpmbuild --short-circuit -bb ~/rpmbuild/SPECS/glibc.spec
+
+# Rebuilding the glibc source RPM results in many binary RPMs being produced, not all of which are currently installed.
+# Find which ones are currently installed and move them for the next stage to install.
+# Strictly speaking we should make all of these RPMs available to the next stage and do the check there, but we assume
+# the check will return the same answer in both stages and minimize the size increase of the final image.
+RUN ls ~/rpmbuild/RPMS/$(uname -m)/ | sed "s/^\(.\+\)-[0-9]\+\.[0-9]\+.*\.el.\.$(uname -m)\.rpm$/\1/" | uniq | tee built-packages \
+    && awk '{ print $0 "-[0-9]\\+\\.[0-9]\\+" }' built-packages | tee built-packages.regex \
+    && rpm -qa | grep -f built-packages.regex | tee built-packages-already-installed \
+    && cd ~/rpmbuild/RPMS/$(uname -m) \
+    && mkdir -p /tmp/patched-glibc \
+    && mv -v $(cat $OLDPWD/built-packages-already-installed | awk '{ print $0 ".rpm" }') /tmp/patched-glibc/
+
 FROM registry.access.redhat.com/ubi9/ubi:latest
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+
+COPY --from=glibc-build /tmp/patched-glibc /tmp/patched-glibc
+
+# --nodeps needed because building via short-circuit inserts a fake dependency on "rpmlib(ShortCircuited)" because by design packages built via short-circuit are not intended to be installed.
+# --force is needed because rebuilt packages have the same version number as existing installed packages.
+RUN rpm -ivh --nodeps --force /tmp/patched-glibc/* \
+    && rm -rf /tmp/patched-glibc
 
 RUN dnf install -y \
     # CRIU dependencies
