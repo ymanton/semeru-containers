@@ -6,6 +6,8 @@ pidplus: CFLAGS=-g -O0 --coverage -Wpedantic -Werror
 
 test: pidplus
 	$(RM) pidplus.gcda
+	sudo setcap -r ./pidplus || true
+	./pidplus 10000 sh -c 'echo "My pid is $$$$ and my parent is $$PPID"' && false || true
 	sudo setcap cap_checkpoint_restore=eip ./pidplus
 	./pidplus && false || true
 	./pidplus -- && false || true
