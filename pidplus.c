@@ -9,6 +9,7 @@
 #include <stdio.h>          /* Definition of printf */
 #include <limits.h>         /* Definition of INT_MIN, INT_MAX */
 #include <stdbool.h>        /* Definition of bool */
+#include <stdint.h>         /* Definition of uintptr_t */
 
 void help(FILE *stream, const char *progname)
 {
@@ -92,8 +93,8 @@ int main(int argc, char **argv)
         .stack = 0,
         .stack_size = 0,
         .tls = 0,
-        .set_tid = target_pid < 0 ? (unsigned long long)0 : (unsigned long long)&target_pid,
-        .set_tid_size = target_pid < 0 ? (unsigned long long)0 : (unsigned long long)1,
+        .set_tid = target_pid < 0 ? 0 : (uintptr_t)&target_pid,
+        .set_tid_size = target_pid < 0 ? 0 : 1,
         .cgroup = 0
     };
 

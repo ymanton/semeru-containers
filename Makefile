@@ -1,6 +1,6 @@
 all: pidplus
 
-pidplus: CFLAGS=-g -O0 --coverage -Wpedantic
+pidplus: CFLAGS=-g -O0 --coverage -Wpedantic -Werror
 
 .PHONY: test
 
