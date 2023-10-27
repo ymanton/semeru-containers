@@ -1,14 +1,12 @@
 #include <linux/sched.h>    /* Definition of struct clone_args */
 #include <sched.h>          /* Definition of CLONE_* constants */
 #include <sys/syscall.h>    /* Definition of SYS_* constants */
-#include <signal.h>         /* Definition of SIGCHLD */
 #include <unistd.h>
 #include <error.h>          /* Definition of error_at_line */
 #include <stdlib.h>         /* Definition of EXIT_FAILURE */
 #include <errno.h>
 #include <stdio.h>          /* Definition of fprintf */
 #include <limits.h>         /* Definition of INT_MIN, INT_MAX */
-#include <stdbool.h>        /* Definition of bool */
 #include <stdint.h>         /* Definition of uintptr_t */
 
 #define PID_ARGV_INDEX 1
@@ -52,8 +50,7 @@ int main(int argc, char **argv)
     pid_t target_pid = parse_pid(argv);
 
     struct clone_args cl_args = {
-        .flags = CLONE_VFORK | /* Wait for the cloned process to exec() before returning; helps to keep our output separate from the target's. */
-                 CLONE_PARENT, /* Make the target process a sibling of this process rather than a child. */
+        .flags = CLONE_PARENT, /* Make the target process a sibling of this process rather than a child. */
         .pidfd = 0,
         .child_tid = 0,
         .parent_tid = 0,
@@ -73,7 +70,7 @@ int main(int argc, char **argv)
     }
     else if (ret == 0) {
         pid_t current_pid = getpid();
-        if (target_pid >= 0 && current_pid != target_pid)
+        if (current_pid != target_pid)
             error_at_line(EXIT_FAILURE, 0, __FILE__, __LINE__, "Target process has PID %d, expected PID %d", current_pid, target_pid);
 
         if (execvp(argv[TARGET_CMDLINE_START_ARGV_INDEX], &argv[TARGET_CMDLINE_START_ARGV_INDEX]) == -1)
