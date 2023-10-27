@@ -18,7 +18,7 @@ enum argv_index_t {
 
 void help(FILE *stream, const char *progname)
 {
-    fprintf(stream, "%s PID [COMMAND [ARGS...]]\n"
+    fprintf(stream, "%s PID COMMAND [ARGS...]\n"
                     "\tPID Target PID\n"
                     "\tCOMMAND [ARGS...] Command to execute\n", progname);
 }
