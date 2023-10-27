@@ -11,6 +11,9 @@
 #include <stdbool.h>        /* Definition of bool */
 #include <stdint.h>         /* Definition of uintptr_t */
 
+#define PID_ARGV_INDEX 1
+#define TARGET_CMDLINE_START_ARGV_INDEX 2
+
 void help(FILE *stream, const char *progname)
 {
     fprintf(stream, "%s PID [COMMAND [ARGS...]]\n"
@@ -18,43 +21,35 @@ void help(FILE *stream, const char *progname)
                     "\tCOMMAND [ARGS...] Command to execute\n", progname);
 }
 
-pid_t parse_pid(const char *pid_text, const char *progname)
+pid_t parse_pid(char **argv)
 {
-    bool pid_parsed = false;
-    char *pid_text_end = NULL;
-    long target_pid = strtol(pid_text, &pid_text_end, 0);
+    if (!argv[PID_ARGV_INDEX])
+        fprintf(stderr, "Not enough arguments\n");
+    else {
+        const char *pid_text = argv[PID_ARGV_INDEX];
+        char *pid_text_end = NULL;
+        long target_pid = strtol(pid_text, &pid_text_end, 0);
 
-    if (*pid_text_end != '\0')
-        fprintf(stderr, "Unable to parse PID: %s\n", pid_text);
-    else if (errno == ERANGE)
-        fprintf(stderr, "PID out of range for long int: %s\n", pid_text);
-    else if (target_pid < INT_MIN || target_pid > INT_MAX)
-        fprintf(stderr, "PID out of range for pid_t: %s\n", pid_text);
-    else
-        pid_parsed = true;
-
-    if (!pid_parsed) {
-        help(stderr, progname);
-        exit(EXIT_FAILURE);
+        if (*pid_text_end != '\0')
+            fprintf(stderr, "Unable to parse PID: %s\n", pid_text);
+        else if (errno == ERANGE)
+            fprintf(stderr, "PID out of range for long int: %s\n", pid_text);
+        else if (target_pid < INT_MIN || target_pid > INT_MAX)
+            fprintf(stderr, "PID out of range for pid_t: %s\n", pid_text);
+        else
+            return target_pid;
     }
 
-    return target_pid;
-}
+    help(stderr, argv[0]);
+    exit(EXIT_FAILURE);
 
-#define PID_ARGV_INDEX 1
-#define TARGET_CMDLINE_START_ARGV_INDEX 2
+    /* Unreachable */
+    return 0;
+}
 
 int main(int argc, char **argv)
 {
-    const char *progname = argv[0];
-
-    if (argc <= PID_ARGV_INDEX) {
-        fprintf(stderr, "Not enough arguments\n");
-        help(stderr, progname);
-        exit(EXIT_FAILURE);
-    }
-
-    pid_t target_pid = parse_pid(argv[PID_ARGV_INDEX], progname);
+    pid_t target_pid = parse_pid(argv);
 
     struct clone_args cl_args = {
         .flags = CLONE_VFORK | /* Wait for the cloned process to exec() before returning; helps to keep our output separate from the target's. */
@@ -81,15 +76,8 @@ int main(int argc, char **argv)
         if (target_pid >= 0 && current_pid != target_pid)
             error_at_line(EXIT_FAILURE, 0, __FILE__, __LINE__, "Target process has PID %d, expected PID %d", current_pid, target_pid);
 
-        char **target_argv = (char **)malloc(sizeof(char*) * argc - TARGET_CMDLINE_START_ARGV_INDEX + 1);
-        for (int i = TARGET_CMDLINE_START_ARGV_INDEX; i < argc; i++)
-            target_argv[i - TARGET_CMDLINE_START_ARGV_INDEX] = argv[i];
-        target_argv[argc - TARGET_CMDLINE_START_ARGV_INDEX] = NULL;
-
-        if (execvp(target_argv[0], &target_argv[0]) == -1) {
-            free(target_argv);
+        if (execvp(argv[TARGET_CMDLINE_START_ARGV_INDEX], &argv[TARGET_CMDLINE_START_ARGV_INDEX]) == -1)
             error_at_line(EXIT_FAILURE, errno, __FILE__, __LINE__, "exec(%s) failed", argv[TARGET_CMDLINE_START_ARGV_INDEX]);
-        }
     }
 
     return 0;
