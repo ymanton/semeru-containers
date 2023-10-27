@@ -9,7 +9,7 @@
 #include <limits.h>         /* Definition of INT_MIN, INT_MAX */
 #include <stdint.h>         /* Definition of uintptr_t */
 
-enum cmdline_args_t {
+enum argv_index_t {
     PROGNAME_ARGV_INDEX = 0,
     PID_ARGV_INDEX,
     TARGET_CMDLINE_START_ARGV_INDEX,
