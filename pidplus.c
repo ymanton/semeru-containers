@@ -8,6 +8,7 @@
 #include <stdio.h>          /* Definition of fprintf */
 #include <limits.h>         /* Definition of INT_MIN, INT_MAX */
 #include <stdint.h>         /* Definition of uintptr_t */
+#include <stdbool.h>        /* Definition of bool, true, false */
 
 enum argv_index_t {
     PROGNAME_ARGV_INDEX = 0,
@@ -25,12 +26,15 @@ void help(FILE *stream, const char *progname)
 
 pid_t parse_args(int argc, char **argv)
 {
+    long target_pid = 0;
+    bool parsed_successfully = false;
+
     if (argc < ARGV_MIN_ARGS)
         fprintf(stderr, "Not enough arguments\n");
     else {
         const char *pid_text = argv[PID_ARGV_INDEX];
         char *pid_text_end = NULL;
-        long target_pid = strtol(pid_text, &pid_text_end, 0);
+        target_pid = strtol(pid_text, &pid_text_end, 0);
 
         if ('\0' != *pid_text_end)
             fprintf(stderr, "Unable to parse PID: %s\n", pid_text);
@@ -39,14 +43,15 @@ pid_t parse_args(int argc, char **argv)
         else if (target_pid < INT_MIN || target_pid > INT_MAX)
             fprintf(stderr, "PID out of range for pid_t: %s\n", pid_text);
         else
-            return target_pid;
+            parsed_successfully = true;
     }
 
-    help(stderr, argv[PROGNAME_ARGV_INDEX]);
-    exit(EXIT_FAILURE);
+    if (!parsed_successfully) {
+        help(stderr, argv[PROGNAME_ARGV_INDEX]);
+        exit(EXIT_FAILURE);
+    }
 
-    /* Unreachable */
-    return 0;
+    return target_pid;
 }
 
 int main(int argc, char **argv)
