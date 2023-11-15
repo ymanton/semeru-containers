@@ -45,16 +45,16 @@ RUN --mount=type=secret,id=criu_secrets source /run/secrets/criu_secrets; \
       amd64|x86_64|ppc64el|ppc64le|s390x|aarch64|arm64) \
         case "${ARCH}" in \
         amd64|x86_64) \
-          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/28/x64_linux/criu.tar.gz'; \
-          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/28/x64_linux/criu.tar.gz.sha256.txt'; \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/64/x64_linux/ubi9/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/64/x64_linux/ubi9/criu.tar.gz.sha256.txt'; \
           ;; \
         ppc64el|ppc64le) \
-          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/30/ppc64le_linux/criu.tar.gz'; \
-          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/30/ppc64le_linux/criu.tar.gz.sha256.txt'; \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/64/ppc64le_linux/ubi9/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/64/ppc64le_linux/ubi9/criu.tar.gz.sha256.txt'; \
           ;; \
         s390x) \
-          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/28/s390x_linux/criu.tar.gz'; \
-          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/28/s390x_linux/criu.tar.gz.sha256.txt'; \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/64/s390x_linux/ubi9/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/64/s390x_linux/ubi9/criu.tar.gz.sha256.txt'; \
           ;; \
         aarch64) \
           CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/28/aarch64_linux/criu.tar.gz'; \
@@ -95,7 +95,7 @@ RUN set -eux; \
          ESUM='70f3988b6f9d5c1d329546c61022bac073342677f9daadc14d529f58c3ecf16c'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.20.1%2B1_openj9-0.40.0/ibm-semeru-certified-jdk_x64_linux_11.0.20.1-archive.bin'; \
          ;; \
-       ppc64el|ppc64le) \ 
+       ppc64el|ppc64le) \
          ESUM='4bb6528874347bc474193e188a138d94c2549449b6610540b879d20d1e168708'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.20.1%2B1_openj9-0.40.0/ibm-semeru-certified-jdk_ppc64le_linux_11.0.20.1-archive.bin'; \
          ;; \
