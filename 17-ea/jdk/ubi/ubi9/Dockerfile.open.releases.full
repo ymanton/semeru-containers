@@ -26,7 +26,7 @@ RUN dnf install -y \
 
 LABEL name="IBM Semeru Runtime EA" \
       vendor="International Business Machines Corporation" \
-      version="17.0.8.6" \
+      version="jdk-17.0.10+6_openj9-0.43.0-m2" \
       release="17" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
       summary="IBM Semeru Runtime EA Docker Image for OpenJDK with openj9 and ubi" \
@@ -38,20 +38,20 @@ RUN --mount=type=secret,id=criu_secrets source /run/secrets/criu_secrets; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
         amd64|x86_64) \
-          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/73/x64_linux/ubi9/criu.tar.gz'; \
-          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/73/x64_linux/ubi9/criu.tar.gz.sha256.txt'; \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/76/x64_linux/ubi9/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/76/x64_linux/ubi9/criu.tar.gz.sha256.txt'; \
           ;; \
         ppc64el|ppc64le) \
-          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/73/ppc64le_linux/ubi9/criu.tar.gz'; \
-          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/73/ppc64le_linux/ubi9/criu.tar.gz.sha256.txt'; \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/76/ppc64le_linux/ubi9/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/76/ppc64le_linux/ubi9/criu.tar.gz.sha256.txt'; \
           ;; \
         s390x) \
-          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/73/s390x_linux/ubi9/criu.tar.gz'; \
-          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/73/s390x_linux/ubi9/criu.tar.gz.sha256.txt'; \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/76/s390x_linux/ubi9/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/criu_build_sandbox/76/s390x_linux/ubi9/criu.tar.gz.sha256.txt'; \
           ;; \
         aarch64) \
-          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/28/aarch64_linux/criu.tar.gz'; \
-          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/28/aarch64_linux/criu.tar.gz.sha256.txt'; \
+          CRIU_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/76/aarch64_linux/criu.tar.gz'; \
+          CRIU_SHA_URL='https://na-public.artifactory.swg-devops.com/artifactory/sys-rt-generic-local/hyc-runtimes-jenkins.swg-devops.com/build-scripts/criu_build/76/aarch64_linux/criu.tar.gz.sha256.txt'; \
           ;; \
         *) \
           echo "Unsupported arch: ${ARCH}"; \
@@ -74,19 +74,27 @@ RUN --mount=type=secret,id=criu_secrets source /run/secrets/criu_secrets; \
 
 ENV PATH="/usr/local/sbin:$PATH"
 
-ENV JAVA_VERSION 17.0.8.6
+ENV JAVA_VERSION jdk-17.0.10+6_openj9-0.43.0-m2
 
 RUN --mount=type=secret,id=criu_secrets source /run/secrets/criu_secrets; \
     set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-         ESUM='1b827c24ea4d0b39c76d076c6e45b91011b444c120ed0ec06e5ae307ca20e079'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.8%2B6_openj9-0.40.0-m2/ibm-semeru-open-jdk_x64_linux_17.0.8_6_openj9-0.40.0-m2.tar.gz'; \
+         ESUM='f27819bbd57748905899195cf3e55f1f03004b9280d300d64ddca249c382bfd3'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.10%2B6_openj9-0.43.0-m2/ibm-semeru-open-jdk_x64_linux_17.0.10_6_openj9-0.43.0-m2.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='0636198e6fa45bcb8cec2a52bf06cead6350ef4d9879534ce279ca9d6a29ffd0'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.9%2B5_openj9-0.41.0-m1/ibm-semeru-open-jdk_ppc64le_linux_17.0.9_5_openj9-0.41.0-m1.tar.gz'; \
+         ESUM='93629aab930094ea1166449d671b09aa4a73da541fd471377392fafbf9e012a0'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.10%2B6_openj9-0.43.0-m2/ibm-semeru-open-jdk_ppc64le_linux_17.0.10_6_openj9-0.43.0-m2.tar.gz'; \
+         ;; \
+        s390x) \
+         ESUM='2642c46e0a5ddbbc3aabf9ae9f5994545390afe5d33b4ea721f0ff579f99fd49'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.10%2B6_openj9-0.43.0-m2/ibm-semeru-open-jdk_s390x_linux_17.0.10_6_openj9-0.43.0-m2.tar.gz'; \
+         ;; \
+        aarch64|arm64) \
+         ESUM='6505963ef80fb68b00ec033c9b671d1dfb3af909a8a08412361537ca444863ff'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.10%2B6_openj9-0.43.0-m2/ibm-semeru-open-jdk_aarch64_linux_17.0.10_6_openj9-0.43.0-m2.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
