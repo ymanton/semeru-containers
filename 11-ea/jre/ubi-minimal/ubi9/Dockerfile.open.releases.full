@@ -27,8 +27,8 @@ RUN microdnf install -y \
 
 LABEL name="IBM Semeru Runtime EA" \
       vendor="International Business Machines Corporation" \
-      version="21.0.1.0" \
-      release="21" \
+      version="jdk-11.0.22+6_openj9-0.43.0-m2" \
+      release="11" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
       summary="IBM Semeru Runtime EA Docker Image for OpenJDK with openj9 and ubi" \
       description="For more information on this image please see https://github.com/ibmruntimes/semeru-containers/blob/master/README.md"
@@ -75,27 +75,26 @@ RUN --mount=type=secret,id=criu_secrets source /run/secrets/criu_secrets; \
 
 ENV PATH="/usr/local/sbin:$PATH"
 
-ENV JAVA_VERSION 21.0.1.0
+ENV JAVA_VERSION jdk-11.0.22+6_openj9-0.43.0-m2
 
-RUN --mount=type=secret,id=criu_secrets source /run/secrets/criu_secrets; \
-    set -eux; \
+RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-         ESUM='ec740bc22635c199a4f88a5bc89aabdb0a21be77ba1747e47bf8c209e95111a8'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.1%2B12_openj9-0.43.0-m2/ibm-semeru-open-jdk_x64_linux_21.0.1_12_openj9-0.43.0-m2.tar.gz'; \
+         ESUM='5212c16c6e7d2d56b2d8e165fdd944501b3040b8ded5b5aae537b83954929317'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.22%2B6_openj9-0.43.0-m2/ibm-semeru-open-jre_x64_linux_11.0.22_6_openj9-0.43.0-m2.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='ba40624c2740d8f33a3cadf741b841f7da77f49294739e19d575756b5df3748f'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.1%2B12_openj9-0.43.0-m2/ibm-semeru-open-jdk_ppc64le_linux_21.0.1_12_openj9-0.43.0-m2.tar.gz'; \
+         ESUM='b5e3bcf937d23400d44aa7384fbbdf8c00924ba98a6486a817bc3849f025d447'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.22%2B6_openj9-0.43.0-m2/ibm-semeru-open-jre_ppc64le_linux_11.0.22_6_openj9-0.43.0-m2.tar.gz'; \
          ;; \
        s390x) \
-         ESUM='34873a5f75497ca07e4c42075d432ecf5d9107b77824819ce7b5167cb6f6f207'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.1%2B12_openj9-0.43.0-m2/ibm-semeru-open-jdk_s390x_linux_21.0.1_12_openj9-0.43.0-m2.tar.gz'; \
+         ESUM='08bfa04019f6ea9f1cad4dd2994f6721e911aa80b6148ebee04f13edaaedbd94'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.22%2B6_openj9-0.43.0-m2/ibm-semeru-open-jre_s390x_linux_11.0.22_6_openj9-0.43.0-m2.tar.gz'; \
          ;; \
        aarch64|arm64) \
-         ESUM='42a3c95818412e736ee3e1bc65ed1f7f369ad1dcbaa30fcbb9b0864d7bdf9b2f'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.1%2B12_openj9-0.43.0-m2/ibm-semeru-open-jdk_aarch64_linux_21.0.1_12_openj9-0.43.0-m2.tar.gz'; \
+         ESUM='afe51af4b163d091f6f9e16ac9bcfb20c740647cfd9fc4dba76ec4698d5d7703'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.22%2B6_openj9-0.43.0-m2/ibm-semeru-open-jre_aarch64_linux_11.0.22_6_openj9-0.43.0-m2.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
