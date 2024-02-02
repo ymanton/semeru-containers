@@ -1,4 +1,4 @@
-# (C) Copyright IBM Corporation 2021, 2023
+# (C) Copyright IBM Corporation 2021, 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@ ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 RUN dnf install -y tzdata openssl ca-certificates fontconfig glibc-langpack-en gzip tar \
     && dnf update -y; dnf clean all
 
-LABEL name="IBM Semeru Runtime " \
+LABEL name="IBM Semeru Runtime Open Edition" \
       vendor="International Business Machines Corporation" \
       version="jdk-19.0.2+7_openj9-0.37.0" \
       release="19" \
       run="docker run --rm -ti <image_name:tag> /bin/bash" \
       summary="IBM Semeru Runtime Docker Image for OpenJDK with openj9 and ubi" \
-      description="For more information on this image please see https://github.com/ibmruntimes/openjdk-docker/blob/master/README.md"
+      description="For more information on this image please see https://github.com/ibmruntimes/semeru-containers/blob/master/README.md"
 
 ENV JAVA_VERSION jdk-19.0.2+7_openj9-0.37.0
 
