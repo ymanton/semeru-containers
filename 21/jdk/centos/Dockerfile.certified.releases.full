@@ -1,4 +1,4 @@
-# (C) Copyright IBM Corporation 2021, 2024
+# (C) Copyright IBM Corporation 2024, 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,42 +13,34 @@
 # limitations under the License.
 #
 
-FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
+FROM centos:7
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-RUN microdnf install -y tzdata openssl ca-certificates fontconfig glibc-langpack-en gzip tar \
-    && microdnf update -y; microdnf clean all
+RUN yum install -y tzdata openssl curl ca-certificates fontconfig gzip tar \
+    && yum clean all
 
-LABEL name="IBM Semeru Runtime Open Edition" \
-      vendor="International Business Machines Corporation" \
-      version="jdk-17.0.9+9_openj9-0.41.0" \
-      release="17" \
-      run="docker run --rm -ti <image_name:tag> /bin/bash" \
-      summary="IBM Semeru Runtime Docker Image for OpenJDK with openj9 and ubi-minimal" \
-      description="For more information on this image please see https://github.com/ibmruntimes/semeru-containers/blob/master/README.md"
-
-ENV JAVA_VERSION jdk-17.0.9+9_openj9-0.41.0
+ENV JAVA_VERSION 21.0.1.0
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        aarch64|arm64) \
-         ESUM='cfdff21ce44ae6af494cba75c1f323bef83a982f2c11944988bab2125f85b906'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.9%2B9_openj9-0.41.0/ibm-semeru-open-jdk_aarch64_linux_17.0.9_9_openj9-0.41.0.tar.gz'; \
+         ESUM='c409f681221b875da6574c562902cc0d719480cb2b9a826a9ee9d12c03f4ced8'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru21-certified-binaries/releases/download/jdk-21.0.1%2B12_openj9-0.42.0/ibm-semeru-certified-jdk_aarch64_linux_21.0.1.0.tar.gz'; \
          ;; \
        amd64|x86_64) \
-         ESUM='9b945e58f024108a20eb907015cca4a452332b7644e8dd8e051149a3ec62e3a3'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.9%2B9_openj9-0.41.0/ibm-semeru-open-jdk_x64_linux_17.0.9_9_openj9-0.41.0.tar.gz'; \
+         ESUM='33276aef8ff8e6e3b2a89bbe4ebdfe3df8056191a2d78c133764ac165caaa327'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru21-certified-binaries/releases/download/jdk-21.0.1%2B12_openj9-0.42.0/ibm-semeru-certified-jdk_x64_linux_21.0.1.0.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='6934275c8045df881db8693caa219ef566d15f4a0d0b0154583f12370b996c5b'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.9%2B9_openj9-0.41.0/ibm-semeru-open-jdk_ppc64le_linux_17.0.9_9_openj9-0.41.0.tar.gz'; \
+         ESUM='21ed1dca0c374c360e7c825c61992ddcba08cb2523d9e78e093be44e31771f45'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru21-certified-binaries/releases/download/jdk-21.0.1%2B12_openj9-0.42.0/ibm-semeru-certified-jdk_ppc64le_linux_21.0.1.0.tar.gz'; \
          ;; \
        s390x) \
-         ESUM='97939cfaea8a25287b8e4436bb2d679ce823f80a717317f696e64ccc97f592f2'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.9%2B9_openj9-0.41.0/ibm-semeru-open-jdk_s390x_linux_17.0.9_9_openj9-0.41.0.tar.gz'; \
-         ;;\
+         ESUM='66a7b601fa48824789c71d72ae38e1f5bbcca27b849e4be586789e3e77eb7a70'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru21-certified-binaries/releases/download/jdk-21.0.1%2B12_openj9-0.42.0/ibm-semeru-certified-jdk_s390x_linux_21.0.1.0.tar.gz'; \
+         ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
          exit 1; \
@@ -56,15 +48,16 @@ RUN set -eux; \
     esac; \
     curl -LfsSo /tmp/openjdk.tar.gz ${BINARY_URL}; \
     echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
-    mkdir -p /opt/java/openjdk; \
-    cd /opt/java/openjdk; \
-    tar -xf /tmp/openjdk.tar.gz --strip-components=1; \
+    mkdir -p /opt/ibm/; \
+    cd /opt/ibm/; \
+    tar -xf /tmp/openjdk.tar.gz ; \
     mkdir -p /licenses; \
-    cp /opt/java/openjdk/legal/java.base/LICENSE /licenses; \
+    mv /opt/ibm/jdk-21* /opt/ibm/java; \
+    cp /opt/ibm/java/legal/java.base/license/license_en.txt /licenses; \
     rm -rf /tmp/openjdk.tar.gz;
 
-ENV JAVA_HOME=/opt/java/openjdk \
-    PATH="/opt/java/openjdk/bin:$PATH"
+ENV JAVA_HOME=/opt/ibm/java \
+    PATH="/opt/ibm/java/bin:$PATH"
 ENV JAVA_TOOL_OPTIONS="-XX:+IgnoreUnrecognizedVMOptions -XX:+PortableSharedCache -XX:+IdleTuningGcOnIdle -Xshareclasses:name=openj9_system_scc,cacheDir=/opt/java/.scc,readonly,nonFatal"
 
 # Create OpenJ9 SharedClassCache (SCC) for bootclasses to improve the java startup.
@@ -116,4 +109,3 @@ RUN set -eux; \
     \
     echo "SCC generation phase completed";
 
-USER 1001
