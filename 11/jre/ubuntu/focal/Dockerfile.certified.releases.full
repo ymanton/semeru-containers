@@ -1,4 +1,4 @@
-# (C) Copyright IBM Corporation 2021, 2023
+# (C) Copyright IBM Corporation 2021, 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,26 +22,26 @@ RUN apt-get update \
     && locale-gen en_US.UTF-8 \
     && rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_VERSION 11.0.21.0
+ENV JAVA_VERSION 11.0.22.0
 
 RUN set -eux; \
     ARCH="$(dpkg --print-architecture)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-         ESUM='a687a08eefa9896cea10e9414362ec335fefa2e912ac52ea2b497e3eabaa4cdd'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.21%2B9_openj9-0.41.0/ibm-semeru-certified-jre_x64_linux_11.0.21.0.tar.gz'; \
+         ESUM='7f986178d5ac800aa0cf3ef1e6e0f1e2b283075445e4041fcaeff6829c868dc1'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jre_x64_linux_11.0.22.0.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='14f7c6c11ffb10f1971447a7d818f2c008a4c5a9d5bb779b8d804672f88a6a1b'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.21%2B9_openj9-0.41.0/ibm-semeru-certified-jre_ppc64le_linux_11.0.21.0.tar.gz'; \
+         ESUM='b8c4d93605e737a82de89af1829f7ae005d045d7c2aa65bda03113f0b0dd6042'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jre_ppc64le_linux_11.0.22.0.tar.gz'; \
          ;; \
        s390x) \
-         ESUM='c699e99dfc579dbda49a4cdda40cd76d35faf221e58890353edaf11db5bcad4f'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.21%2B9_openj9-0.41.0/ibm-semeru-certified-jre_s390x_linux_11.0.21.0.tar.gz'; \
+         ESUM='2f7282f86c39a4995b60d794a38800c43c525ff0dc1f470bd75b9b351074a7cb'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jre_s390x_linux_11.0.22.0.tar.gz'; \
          ;; \
        aarch64|arm64) \
-         ESUM='9ff4b8a6b2959f1e65787c93eddf2f8ed72e9c0dcbad0c582c5b2045594d565c'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.21%2B9_openj9-0.41.0/ibm-semeru-certified-jre_aarch64_linux_11.0.21.0.tar.gz'; \
+         ESUM='2022f40fa11e0d693b66dd7c62e1757a7f40487687bc2928e77b616eb8e5f939'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jre_aarch64_linux_11.0.22.0.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
