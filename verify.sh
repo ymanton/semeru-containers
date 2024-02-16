@@ -26,6 +26,9 @@
 image=$1
 arch=`echo $image | cut -d "/" -f1`
 
+# Get the current script's directory
+script_dir=$(dirname "$0")
+
 if [ "$arch" == "i386" ]; then
 	tag=$arch-`echo $image | cut -d ":" -f2`
 else
@@ -50,8 +53,8 @@ testJavaVersion()
 
 testHelloWorld()
 {
-   helloOutput=$(docker run --rm -v $PWD/hw:/opt/app $image java -jar /opt/app/hello.jar)
-   comparison=$(diff -u <(echo "$helloOutput") "$PWD/hw/hello.txt")
+   helloOutput=$(docker run --rm -v $script_dir/hw:/opt/app $image java -jar /opt/app/hello.jar)
+   comparison=$(diff -u <(echo "$helloOutput") "$script_dir/hw/hello.txt")
 
    if [ $? != 0 ]
    then
