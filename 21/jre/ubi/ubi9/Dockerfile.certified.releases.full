@@ -106,7 +106,7 @@ RUN set -eux; \
     cd /opt/ibm/; \
     tar -xf /tmp/openjdk.tar.gz ; \
     mkdir -p /licenses; \
-    mv /opt/ibm/jdk-17* /opt/ibm/java; \
+    mv /opt/ibm/jdk-21* /opt/ibm/java; \
     cp /opt/ibm/java/legal/java.base/license/license_en.txt /licenses; \
     rm -rf /tmp/openjdk.tar.gz;
 
@@ -179,4 +179,5 @@ RUN glibc_hwcaps_dirs=$(ldconfig --print-cache | sed --regexp-extended --silent 
     && for d in $glibc_hwcaps_dirs; do mv -v $d-hidden $d; done \
     && mv -v /etc/ld.so.cache.orig /etc/ld.so.cache
 
+USER 1001
 CMD ["jshell"]
