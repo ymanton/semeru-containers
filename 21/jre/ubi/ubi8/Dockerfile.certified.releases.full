@@ -179,4 +179,5 @@ RUN glibc_hwcaps_dirs=$(ldconfig --print-cache | sed --regexp-extended --silent 
     && for d in $glibc_hwcaps_dirs; do mv -v $d-hidden $d; done \
     && mv -v /etc/ld.so.cache.orig /etc/ld.so.cache
 
+USER 1001
 CMD ["jshell"]
