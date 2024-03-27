@@ -81,19 +81,19 @@ RUN --mount=type=secret,id=criu_secrets source /run/secrets/criu_secrets; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-         ESUM='ec740bc22635c199a4f88a5bc89aabdb0a21be77ba1747e47bf8c209e95111a8'; \
+         ESUM_URL='https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.1%2B12_openj9-0.43.0-m2/ibm-semeru-open-jdk_x64_linux_21.0.1_12_openj9-0.43.0-m2.tar.gz.sha256.txt'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.1%2B12_openj9-0.43.0-m2/ibm-semeru-open-jdk_x64_linux_21.0.1_12_openj9-0.43.0-m2.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='ba40624c2740d8f33a3cadf741b841f7da77f49294739e19d575756b5df3748f'; \
+         ESUM_URL='https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.1%2B12_openj9-0.43.0-m2/ibm-semeru-open-jdk_ppc64le_linux_21.0.1_12_openj9-0.43.0-m2.tar.gz.sha256.txt'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.1%2B12_openj9-0.43.0-m2/ibm-semeru-open-jdk_ppc64le_linux_21.0.1_12_openj9-0.43.0-m2.tar.gz'; \
          ;; \
        s390x) \
-         ESUM='34873a5f75497ca07e4c42075d432ecf5d9107b77824819ce7b5167cb6f6f207'; \
+         ESUM_URL='https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.1%2B12_openj9-0.43.0-m2/ibm-semeru-open-jdk_s390x_linux_21.0.1_12_openj9-0.43.0-m2.tar.gz.sha256.txt'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.1%2B12_openj9-0.43.0-m2/ibm-semeru-open-jdk_s390x_linux_21.0.1_12_openj9-0.43.0-m2.tar.gz'; \
          ;; \
        aarch64|arm64) \
-         ESUM='42a3c95818412e736ee3e1bc65ed1f7f369ad1dcbaa30fcbb9b0864d7bdf9b2f'; \
+         ESUM_URL='https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.1%2B12_openj9-0.43.0-m2/ibm-semeru-open-jdk_aarch64_linux_21.0.1_12_openj9-0.43.0-m2.tar.gz.sha256.txt'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru21-binaries/releases/download/jdk-21.0.1%2B12_openj9-0.43.0-m2/ibm-semeru-open-jdk_aarch64_linux_21.0.1_12_openj9-0.43.0-m2.tar.gz'; \
          ;; \
        *) \
@@ -101,8 +101,10 @@ RUN --mount=type=secret,id=criu_secrets source /run/secrets/criu_secrets; \
          exit 1; \
          ;; \
     esac; \
-    curl -LfsSo /tmp/openjdk.tar.gz ${BINARY_URL}; \
-    echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
+    curl -LfsSo /tmp/openjdk.tar.gz.sha256.txt ${ESUM_URL}; \
+    curl -OLJSks ${BINARY_URL}; \
+    sha256sum -c /tmp/openjdk.tar.gz.sha256.txt; \
+    mv ibm-semeru-*tar.gz /tmp/openjdk.tar.gz; \
     mkdir -p /opt/java/java-ea; \
     cd /opt/java/java-ea; \
     tar -xf /tmp/openjdk.tar.gz --strip-components=1; \

@@ -34,19 +34,19 @@ RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-         ESUM='a1fc6535595c709e5e24f8b91369c339bc4c9ecc326c8670a01211dd81e227ef'; \
+         ESUM_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jdk_x64_linux_11.0.22.0.tar.gz.sha256.txt'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jdk_x64_linux_11.0.22.0.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='04681828b048187aca03a4f33a41dae06562d82e8e7c0e80a0954d97c0436935'; \
+         ESUM_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jdk_ppc64le_linux_11.0.22.0.tar.gz.sha256.txt'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jdk_ppc64le_linux_11.0.22.0.tar.gz'; \
          ;; \
        s390x) \
-         ESUM='397bb336805eff9ad366cfa850394be84e287e7f175550c2e4c4fa2f89c4eb9b'; \
+         ESUM_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jdk_s390x_linux_11.0.22.0.tar.gz.sha256.txt'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jdk_s390x_linux_11.0.22.0.tar.gz'; \
          ;; \
        aarch64|arm64) \
-         ESUM='859bbc29b4a2e60f4babc6b23b65eaf06f01c0123f9e7394179a98f6663edfce'; \
+         ESUM_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jdk_aarch64_linux_11.0.22.0.tar.gz.sha256.txt'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jdk_aarch64_linux_11.0.22.0.tar.gz'; \
          ;; \
        *) \
@@ -54,8 +54,10 @@ RUN set -eux; \
          exit 1; \
          ;; \
     esac; \
-    curl -LfsSo /tmp/openjdk.tar.gz ${BINARY_URL}; \
-    echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
+    curl -LfsSo /tmp/openjdk.tar.gz.sha256.txt ${ESUM_URL}; \
+    curl -OLJSks ${BINARY_URL}; \
+    sha256sum -c /tmp/openjdk.tar.gz.sha256.txt; \
+    mv ibm-semeru-*tar.gz /tmp/openjdk.tar.gz; \
     mkdir -p /opt/ibm/; \
     cd /opt/ibm/; \
     tar -xf /tmp/openjdk.tar.gz ; \

@@ -29,19 +29,19 @@ RUN set -eux; \
     ARCH="$(dpkg --print-architecture)"; \
     case "${ARCH}" in \
        aarch64|arm64) \
-         ESUM='c917990cb1930120072b52326090669d173248bbdbcf06bfc00cbbfea38a3235'; \
+         ESUM_URL='https://github.com/ibmruntimes/semeru21-certified-binaries/releases/download/jdk-21.0.2%2B13_openj9-0.43.0/ibm-semeru-certified-jdk_aarch64_linux_21.0.2.0.tar.gz.sha256.txt'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru21-certified-binaries/releases/download/jdk-21.0.2%2B13_openj9-0.43.0/ibm-semeru-certified-jdk_aarch64_linux_21.0.2.0.tar.gz'; \
          ;; \
        amd64|x86_64) \
-         ESUM='607c66e251b3846daece60b5e5e5cbc5d05658420c113c4472b86054c033768b'; \
+         ESUM_URL='https://github.com/ibmruntimes/semeru21-certified-binaries/releases/download/jdk-21.0.2%2B13_openj9-0.43.0/ibm-semeru-certified-jdk_x64_linux_21.0.2.0.tar.gz.sha256.txt'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru21-certified-binaries/releases/download/jdk-21.0.2%2B13_openj9-0.43.0/ibm-semeru-certified-jdk_x64_linux_21.0.2.0.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='a671c0bfb2dcfdddfdd523393829141c79d8a18b80534c1a1937e62fd739dab6'; \
+         ESUM_URL='https://github.com/ibmruntimes/semeru21-certified-binaries/releases/download/jdk-21.0.2%2B13_openj9-0.43.0/ibm-semeru-certified-jdk_ppc64le_linux_21.0.2.0.tar.gz.sha256.txt'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru21-certified-binaries/releases/download/jdk-21.0.2%2B13_openj9-0.43.0/ibm-semeru-certified-jdk_ppc64le_linux_21.0.2.0.tar.gz'; \
          ;; \
        s390x) \
-         ESUM='e0025c1cb8d8f860f9d1ff2b3f2d4dec0b7b38208dff202ad36fcd57ea85f05c'; \
+         ESUM_URL='https://github.com/ibmruntimes/semeru21-certified-binaries/releases/download/jdk-21.0.2%2B13_openj9-0.43.0/ibm-semeru-certified-jdk_s390x_linux_21.0.2.0.tar.gz.sha256.txt'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru21-certified-binaries/releases/download/jdk-21.0.2%2B13_openj9-0.43.0/ibm-semeru-certified-jdk_s390x_linux_21.0.2.0.tar.gz'; \
          ;; \
        *) \
@@ -49,8 +49,10 @@ RUN set -eux; \
          exit 1; \
          ;; \
     esac; \
-    curl -LfsSo /tmp/openjdk.tar.gz ${BINARY_URL}; \
-    echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
+    curl -LfsSo /tmp/openjdk.tar.gz.sha256.txt ${ESUM_URL}; \
+    curl -OLJSks ${BINARY_URL}; \
+    sha256sum -c /tmp/openjdk.tar.gz.sha256.txt; \
+    mv ibm-semeru-*tar.gz /tmp/openjdk.tar.gz; \
     mkdir -p /opt/ibm/; \
     cd /opt/ibm/; \
     tar -xf /tmp/openjdk.tar.gz ; \
