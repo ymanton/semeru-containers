@@ -83,7 +83,7 @@ RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-         ESUM='f4861c852e706879693cc3a8d93ba8a9c0699c0f659f185775d6b6a0663fe045'; \
+         ESUM_URL='https://github.com/ibmruntimes/semeru11-ea-binaries/releases/download/jdk-11.0.19%2B7_may_23-preview_1/ibm-semeru-open-jdk_x64_linux_11.0.19_7_May_23-preview_1.tar.gz.sha256.txt'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru11-ea-binaries/releases/download/jdk-11.0.19%2B7_may_23-preview_1/ibm-semeru-open-jdk_x64_linux_11.0.19_7_May_23-preview_1.tar.gz'; \
          ;; \
        *) \
@@ -91,8 +91,10 @@ RUN set -eux; \
          exit 1; \
          ;; \
     esac; \
-    curl -LfsSo /tmp/openjdk.tar.gz ${BINARY_URL}; \
-    echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
+    curl -LfsSo /tmp/openjdk.tar.gz.sha256.txt ${ESUM_URL}; \
+    curl -OLJSks ${BINARY_URL}; \
+    sha256sum -c /tmp/openjdk.tar.gz.sha256.txt; \
+    mv ibm-semeru-*tar.gz /tmp/openjdk.tar.gz; \
     mkdir -p /opt/java/java-ea; \
     cd /opt/java/java-ea; \
     tar -xf /tmp/openjdk.tar.gz --strip-components=1;
