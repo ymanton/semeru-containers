@@ -22,26 +22,26 @@ RUN apt-get update \
     && locale-gen en_US.UTF-8 \
     && rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_VERSION 11.0.22.0
+ENV JAVA_VERSION 11.0.23.0
 
 RUN set -eux; \
     ARCH="$(dpkg --print-architecture)"; \
     case "${ARCH}" in \
        amd64|x86_64) \
-         ESUM_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jdk_x64_linux_11.0.22.0.tar.gz.sha256.txt'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jdk_x64_linux_11.0.22.0.tar.gz'; \
+         ESUM_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.23%2B9_openj9-0.44.0/ibm-semeru-certified-jdk_x64_linux_11.0.23.0.tar.gz.sha256.txt'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.23%2B9_openj9-0.44.0/ibm-semeru-certified-jdk_x64_linux_11.0.23.0.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jdk_ppc64le_linux_11.0.22.0.tar.gz.sha256.txt'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jdk_ppc64le_linux_11.0.22.0.tar.gz'; \
+         ESUM_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.23%2B9_openj9-0.44.0/ibm-semeru-certified-jdk_ppc64le_linux_11.0.23.0.tar.gz.sha256.txt'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.23%2B9_openj9-0.44.0/ibm-semeru-certified-jdk_ppc64le_linux_11.0.23.0.tar.gz'; \
          ;; \
        s390x) \
-         ESUM_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jdk_s390x_linux_11.0.22.0.tar.gz.sha256.txt'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jdk_s390x_linux_11.0.22.0.tar.gz'; \
+         ESUM_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.23%2B9_openj9-0.44.0/ibm-semeru-certified-jdk_s390x_linux_11.0.23.0.tar.gz.sha256.txt'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.23%2B9_openj9-0.44.0/ibm-semeru-certified-jdk_s390x_linux_11.0.23.0.tar.gz'; \
          ;; \
        aarch64|arm64) \
-         ESUM_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jdk_aarch64_linux_11.0.22.0.tar.gz.sha256.txt'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.22%2B7_openj9-0.43.0/ibm-semeru-certified-jdk_aarch64_linux_11.0.22.0.tar.gz'; \
+         ESUM_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.23%2B9_openj9-0.44.0/ibm-semeru-certified-jdk_aarch64_linux_11.0.23.0.tar.gz.sha256.txt'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-certified-binaries/releases/download/jdk-11.0.23%2B9_openj9-0.44.0/ibm-semeru-certified-jdk_aarch64_linux_11.0.23.0.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
