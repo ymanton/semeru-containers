@@ -70,15 +70,8 @@ RUN set -eux; \
     SCC_SIZE="50m"; \
     DOWNLOAD_PATH_TOMCAT=/tmp/tomcat; \
     INSTALL_PATH_TOMCAT=/opt/tomcat-home; \
-    TOMCAT_VER=`curl --silent https://dlcdn.apache.org/tomcat/tomcat-9/ | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' | head -n 1` ;\
-    echo $TOMCAT_VER ;\
-    TOMCAT_CSUM_DWNLD_URL="https://dlcdn.apache.org/tomcat/tomcat-9/v${TOMCAT_VER}/bin/apache-tomcat-${TOMCAT_VER}.tar.gz.sha512";\
-    TOMCAT_DWNLD_URL="https://dlcdn.apache.org/tomcat/tomcat-9/v${TOMCAT_VER}/bin/apache-tomcat-${TOMCAT_VER}.tar.gz"; \
-    \
-    mkdir -p "${DOWNLOAD_PATH_TOMCAT}" "${INSTALL_PATH_TOMCAT}"; \
-    curl -LfsSo "${DOWNLOAD_PATH_TOMCAT}"/tomcat.tar.gz.sha512 "${TOMCAT_CSUM_DWNLD_URL}"; \
-    curl -LfsSo "${DOWNLOAD_PATH_TOMCAT}"/tomcat.tar.gz "${TOMCAT_DWNLD_URL}"; \
-    TOMCAT_CHECKSUM=$(grep "tar.gz" "${DOWNLOAD_PATH_TOMCAT}"/tomcat.tar.gz.sha512 | awk '{print $1}');\
+    TOMCAT_CHECKSUM="aaa2851bdc7a2476b6793e95174965c1c861531f161d8a138e87f8532b1af4d4b3d92dd1ae890614a692e5f13fb2e6946a1ada888f21e9d7db1964616b4181f0"; \
+    TOMCAT_DWNLD_URL="https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.89/bin/apache-tomcat-9.0.89.tar.gz"; \
     \
     mkdir -p "${DOWNLOAD_PATH_TOMCAT}" "${INSTALL_PATH_TOMCAT}"; \
     curl -LfsSo "${DOWNLOAD_PATH_TOMCAT}"/tomcat.tar.gz "${TOMCAT_DWNLD_URL}"; \
