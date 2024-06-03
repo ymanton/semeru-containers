@@ -26,19 +26,19 @@ RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        aarch64|arm64) \
-         ESUM_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.11%2B9_openj9-0.44.0/ibm-semeru-certified-jre_aarch64_linux_17.0.11.0.tar.gz.sha256.txt'; \
+         ESUM='c0260052961131cc6db7a183fca7ab3934a0e3f1d93482653d0471778a136d4a'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.11%2B9_openj9-0.44.0/ibm-semeru-certified-jre_aarch64_linux_17.0.11.0.tar.gz'; \
          ;; \
        amd64|x86_64) \
-         ESUM_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.11%2B9_openj9-0.44.0/ibm-semeru-certified-jre_x64_linux_17.0.11.0.tar.gz.sha256.txt'; \
+         ESUM='3eabbaf4a4197cb0683f513782fdb66a95ba63a2778b689e6cd8da353891f51d'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.11%2B9_openj9-0.44.0/ibm-semeru-certified-jre_x64_linux_17.0.11.0.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.11%2B9_openj9-0.44.0/ibm-semeru-certified-jre_ppc64le_linux_17.0.11.0.tar.gz.sha256.txt'; \
+         ESUM='cb083da5be4d34284ce2e9bdaaedf63d676b2c4595900b68c68878a2d4b8c739'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.11%2B9_openj9-0.44.0/ibm-semeru-certified-jre_ppc64le_linux_17.0.11.0.tar.gz'; \
          ;; \
        s390x) \
-         ESUM_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.11%2B9_openj9-0.44.0/ibm-semeru-certified-jre_s390x_linux_17.0.11.0.tar.gz.sha256.txt'; \
+         ESUM='1b74cff7908464ff90a2aa06b3c0edb0b05f9821224311768960f9efc88a01fc'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.11%2B9_openj9-0.44.0/ibm-semeru-certified-jre_s390x_linux_17.0.11.0.tar.gz'; \
          ;; \
        *) \
@@ -46,10 +46,8 @@ RUN set -eux; \
          exit 1; \
          ;; \
     esac; \
-    curl -LfsSo /tmp/openjdk.tar.gz.sha256.txt ${ESUM_URL}; \
-    curl -OLJSks ${BINARY_URL}; \
-    sha256sum -c /tmp/openjdk.tar.gz.sha256.txt; \
-    mv ibm-semeru-*tar.gz /tmp/openjdk.tar.gz; \
+    curl -LfsSo /tmp/openjdk.tar.gz ${BINARY_URL}; \
+    echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
     mkdir -p /opt/ibm/; \
     cd /opt/ibm/; \
     tar -xf /tmp/openjdk.tar.gz ; \
