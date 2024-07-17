@@ -104,7 +104,7 @@ RUN set -eux; \
     echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
     mkdir -p /opt/java/openjdk; \
     cd /opt/java/openjdk; \
-    tar -xf /tmp/openjdk.tar.gz --strip-components=1;
+    tar -xf /tmp/openjdk.tar.gz --strip-components=1; \
     mkdir -p /licenses; \
     cp /opt/java/openjdk/legal/java.base/LICENSE /licenses; \
     rm -rf /tmp/openjdk.tar.gz;
