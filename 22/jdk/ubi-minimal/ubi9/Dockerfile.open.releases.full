@@ -82,7 +82,7 @@ RUN --mount=type=secret,id=criu_secrets source /run/secrets/criu_secrets; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        aarch64|arm64) \
-         ESUM='d7411af782b08ad65ded122356357489103a261f024d499caeb42de9590aa125'; \
+         ESUM='f9936b8374e5a0fb8fca8a4d11339eb63678e08db389852fd149fec27896df69'; \
          BINARY_URL='https://github.com/ibmruntimes/semeru22-binaries/releases/download/jdk-22.0.2%2B9_openj9-0.46.0/ibm-semeru-open-jdk_aarch64_linux_22.0.2_9_openj9-0.46.0.tar.gz'; \
          ;; \
        amd64|x86_64) \
