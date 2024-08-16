@@ -23,26 +23,26 @@ RUN apt-get update \
     && locale-gen en_US.UTF-8 \
     && rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_VERSION 17.0.11.0
+ENV JAVA_VERSION 17.0.12.0
 
 RUN set -eux; \
     ARCH="$(dpkg --print-architecture)"; \
     case "${ARCH}" in \
        aarch64|arm64) \
-         ESUM='a8b411d4518f84831fac02b627624d2aae6f65d642f6fa52ca39b52ab0cbb235'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.11%2B9_openj9-0.44.0/ibm-semeru-certified-jdk_aarch64_linux_17.0.11.0.tar.gz'; \
+         ESUM='ef2874bfa13b178281aa7d163057d95258774053224aec26717d4d44961a0c11'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.12%2B7_openj9-0.46.0/ibm-semeru-certified-jdk_aarch64_linux_17.0.12.0.tar.gz'; \
          ;; \
        amd64|x86_64) \
-         ESUM='1af7c87d8780bbe9a587ac5efa9580b65cc965e778da57b9f9e2a6641b3578cb'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.11%2B9_openj9-0.44.0/ibm-semeru-certified-jdk_x64_linux_17.0.11.0.tar.gz'; \
+         ESUM='e7a2ed4c8099f8e78bafdbf3167396b3afb60a114d9d4294e2eff3245dbf58e0'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.12%2B7_openj9-0.46.0/ibm-semeru-certified-jdk_x64_linux_17.0.12.0.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='b90e693e19c77ad5f55590d37666aa8ecbc2c931c0eba2d47914075db8a21473'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.11%2B9_openj9-0.44.0/ibm-semeru-certified-jdk_ppc64le_linux_17.0.11.0.tar.gz'; \
+         ESUM='6993f40ed2145c7006144e4926f98bf3d96cf5cb5af705ef399078067298dd20'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.12%2B7_openj9-0.46.0/ibm-semeru-certified-jdk_ppc64le_linux_17.0.12.0.tar.gz'; \
          ;; \
        s390x) \
-         ESUM='87688cf941e578364c3dc0ca33e21038c0a81eac21e81b17b1dd585d952d5cae'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.11%2B9_openj9-0.44.0/ibm-semeru-certified-jdk_s390x_linux_17.0.11.0.tar.gz'; \
+         ESUM='c3a1db8999a863f6e2f95795735fc6a284ccd43e1aac4cad7c19e3e71a3f2f3f'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru17-certified-binaries/releases/download/jdk-17.0.12%2B7_openj9-0.46.0/ibm-semeru-certified-jdk_s390x_linux_17.0.12.0.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
