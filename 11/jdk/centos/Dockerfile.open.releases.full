@@ -20,26 +20,26 @@ ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 RUN yum install -y tzdata openssl curl ca-certificates fontconfig gzip tar \
     && yum clean all
 
-ENV JAVA_VERSION jdk-11.0.24+8_openj9-0.46.0
+ENV JAVA_VERSION jdk-11.0.24+8_openj9-0.46.1
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        aarch64|arm64) \
-         ESUM='fb54cb21e0d1ba0854fd0cef2748e9a2b99df6c0e83964ff436776cba88a936d'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.24%2B8_openj9-0.46.0/ibm-semeru-open-jdk_aarch64_linux_11.0.24_8_openj9-0.46.0.tar.gz'; \
+         ESUM='14f982221bb61f8ea5d11f2cb9a3470639004b825dcbb5640ffd27ed479a38c4'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.24%2B8_openj9-0.46.1/ibm-semeru-open-jdk_aarch64_linux_11.0.24_8_openj9-0.46.1.tar.gz'; \
          ;; \
        amd64|x86_64) \
-         ESUM='09d96625790f3191acb531495a4ea2033488f1936c24af7eef7839425b41f28b'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.24%2B8_openj9-0.46.0/ibm-semeru-open-jdk_x64_linux_11.0.24_8_openj9-0.46.0.tar.gz'; \
+         ESUM='37b6e363eb06c27bcfa9c8c1396839ce4a0e03eb58e0b79312fbc470eb968b63'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.24%2B8_openj9-0.46.1/ibm-semeru-open-jdk_x64_linux_11.0.24_8_openj9-0.46.1.tar.gz'; \
          ;; \
        ppc64el|ppc64le) \
-         ESUM='ea8f1e30992cd6ecd21830a12fa7251194ba29d3aff50e886db69e38da5466d3'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.24%2B8_openj9-0.46.0/ibm-semeru-open-jdk_ppc64le_linux_11.0.24_8_openj9-0.46.0.tar.gz'; \
+         ESUM='34a59f13ee3070dcc64408331bb838c1286b7b7ea1ad71c693395aa3ef16c07b'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.24%2B8_openj9-0.46.1/ibm-semeru-open-jdk_ppc64le_linux_11.0.24_8_openj9-0.46.1.tar.gz'; \
          ;; \
        s390x) \
-         ESUM='c1a7e32c54c9e1275a124674ed5dd3daf5ed7c6135c99cfda8aac8cfbbc8fb67'; \
-         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.24%2B8_openj9-0.46.0/ibm-semeru-open-jdk_s390x_linux_11.0.24_8_openj9-0.46.0.tar.gz'; \
+         ESUM='7a632e6503e77604a2f82668a0ef79991c2cb20a0baebf36aa5c8b0426ace796'; \
+         BINARY_URL='https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.24%2B8_openj9-0.46.1/ibm-semeru-open-jdk_s390x_linux_11.0.24_8_openj9-0.46.1.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
