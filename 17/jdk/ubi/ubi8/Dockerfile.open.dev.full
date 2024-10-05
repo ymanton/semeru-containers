@@ -83,6 +83,8 @@ ENV PATH="/usr/local/sbin:$PATH"
 ENV JAVA_VERSION jdk-17.0.12+7_openj9-0.46.1
 
 COPY jdk /opt/java/openjdk
+COPY openj9 /mnt/openjdk/openj9
+COPY omr /mnt/openjdk/omr
 
 RUN set -eux; \
     mkdir -p /licenses; \
@@ -154,5 +156,9 @@ RUN glibc_hwcaps_dirs=$(ldconfig --print-cache | sed --regexp-extended --silent 
     && mv -v /etc/ld.so.cache /etc/instanton.ld.so.cache \
     && for d in $glibc_hwcaps_dirs; do mv -v $d-hidden $d; done \
     && mv -v /etc/ld.so.cache.orig /etc/ld.so.cache
+
+RUN dnf install -y \
+        gdb procps-ng \
+    && dnf update -y; dnf clean all;
 
 USER 1001
