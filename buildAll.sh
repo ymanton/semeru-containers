@@ -24,7 +24,7 @@
 #####################################################################################
 
 filename="$1"
-while read -r line
+while read -r line <&3
 do
     image=`echo $line | cut -d " " -f1`
     location=`echo $line  | cut -d " " -f2`
@@ -37,4 +37,4 @@ do
         exit 1
     fi
 
-done < "$filename"
+done 3< "$filename"
