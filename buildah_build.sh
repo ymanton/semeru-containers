@@ -204,7 +204,11 @@ if [ "$SEMERU_EDITION" = "certified" ]; then
     # TODO: Extract directly to /opt/ibm/java
     tar -xf "$semeru_tarball" -C "$base_mount_point/opt/ibm"
     mv "$base_mount_point/opt/ibm/jdk-"* "$base_mount_point/opt/ibm/java"
-    cp "$base_mount_point/opt/ibm/java/legal/java.base/license/license_en.txt" "$base_mount_point/licenses/"
+    if [ "$SEMERU_JAVA_VERSION" -ge 25 ]; then
+        cp "$base_mount_point/opt/ibm/java/legal/java.base/license_en.txt" "$base_mount_point/licenses/"
+    else
+        cp "$base_mount_point/opt/ibm/java/legal/java.base/license/license_en.txt" "$base_mount_point/licenses/"
+    fi
 else
     # Open edition installs to /opt/java/openjdk
     mkdir -p "$base_mount_point/opt/java/openjdk"
