@@ -90,18 +90,18 @@ if command -v dnf &> /dev/null; then
     # Since we're running dnf on the host, we need this file there.
     # If it existed previously we back it up and restore when done.
     rpm_macros_file="$HOME/.rpmmacros"
-    mkdir -p "$(dirname $rpm_macros_file)"
+    mkdir -p "$(dirname "$rpm_macros_file")"
     [ -e "$rpm_macros_file" ] && echo "Backing up existing rpm macros" >&2 && cp "$rpm_macros_file" "$rpm_macros_file.bak"
     echo "Setting up temp rpm macros" >&2 && echo '%_install_langs C.utf8' >> "$rpm_macros_file"
 
-    dnf install -y --installroot="$base_mount_point" --releasever=$base_mount_point --setopt=install_weak_deps=False --setopt=tsflags=nodocs $SEMERU_PACKAGES $CRIU_PACKAGES >&2
+    dnf install -y --installroot="$base_mount_point" --releasever="$base_mount_point" --setopt=install_weak_deps=False --setopt=tsflags=nodocs $SEMERU_PACKAGES $CRIU_PACKAGES >&2
     dnf --installroot="$base_mount_point" clean all >&2
 
-    echo "Removing temp rpm macros" >&2 && rm -rfv "$rpm_macros_file"
+    echo "Removing temp rpm macros" >&2 && rm -rf "$rpm_macros_file"
     [ -e "$rpm_macros_file.bak" ] && echo "Restoring backup rpm macros" >&2 && mv "$rpm_macros_file.bak" "$rpm_macros_file"
 
     # Leftovers from dnf
-    rm -rfv "$base_mount_point/var/cache/" "$base_mount_point/var/lib/rhsm/" "$base_mount_point/var/lib/rpm/" "$base_mount_point/var/log/"
+    rm -rf "$base_mount_point/var/cache/" "$base_mount_point/var/lib/rhsm/" "$base_mount_point/var/lib/rpm/" "$base_mount_point/var/log/"
 else
     echo "Error: 'dnf' command not found" >&2
     return 1
@@ -110,7 +110,7 @@ fi
 # Grab container's current PATH so we can add stuff to it later
 CONTAINER_PATH=$(buildah run "$base_container" -- sh -c 'echo $PATH')
 
-if [ $SEMERU_JAVA_VERSION -ne 8 ] && [ ! -z "$CRIU_SECRETS_FILE" ] && [ -f "$CRIU_SECRETS_FILE" ]; then
+if [ "$SEMERU_JAVA_VERSION" -ne 8 ] && [ -f "$CRIU_SECRETS_FILE" ]; then
     echo "Installing CRIU..." >&2
 
     source "$CRIU_SECRETS_FILE"
@@ -119,6 +119,7 @@ if [ $SEMERU_JAVA_VERSION -ne 8 ] && [ ! -z "$CRIU_SECRETS_FILE" ] && [ -f "$CRI
     criu_sha_url="${CRIU_BINARY_BASE_URL}/${CRIU_BUILD_ID}/${SEMERU_ARCH}_linux/${UBI_VERSION}/criu.tar.gz.sha256.txt"
 
     criu_host_download_path="/tmp"
+
     pushd "$criu_host_download_path"
     curl -H "${CRIU_AUTH_HEADER}" -LfsSo criu.tar.gz "${criu_url}"
     curl -H "${CRIU_AUTH_HEADER}" -LfsSo criu.tar.gz.sha256.txt "${criu_sha_url}"
@@ -126,6 +127,7 @@ if [ $SEMERU_JAVA_VERSION -ne 8 ] && [ ! -z "$CRIU_SECRETS_FILE" ] && [ -f "$CRI
     # Extract to container mount
     tar -xzf criu.tar.gz --strip-components=1 -C "$base_mount_point"
     popd
+
     echo /usr/local/lib64 > "$base_mount_point/etc/ld.so.conf.d/criu.conf"
     mkdir -p "$base_mount_point/opt/criu"
     cp "$base_mount_point/usr/local/sbin/criu" "$base_mount_point/opt/criu/criu"
@@ -207,7 +209,7 @@ else
     # Open edition installs to /opt/java/openjdk
     mkdir -p "$base_mount_point/opt/java/openjdk"
     tar -xf "$semeru_tarball" --strip-components=1 -C "$base_mount_point/opt/java/openjdk"
-    if [ $SEMERU_JAVA_VERSION -eq 8 ]; then
+    if [ "$SEMERU_JAVA_VERSION" -eq 8 ]; then
         cp "$base_mount_point/opt/java/openjdk/LICENSE" "$base_mount_point/licenses/"
     else
         cp "$base_mount_point/opt/java/openjdk/legal/java.base/LICENSE" "$base_mount_point/licenses/"
