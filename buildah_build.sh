@@ -22,7 +22,7 @@
 set -euo pipefail
 
 # Semeru dependencies
-SEMERU_PACKAGES="tzdata openssl ca-certificates fontconfig glibc-langpack-en gzip tar"   
+SEMERU_PACKAGES="tzdata openssl ca-certificates fontconfig coreutils-single glibc-minimal-langpack glibc-langpack-en gzip tar"   
 # CRIU dependencies
 CRIU_PACKAGES="jansson libibverbs libmnl libnet libnftnl libpcap nftables protobuf-c"
 
