@@ -464,6 +464,11 @@ buildah copy --from "$ldconfig_image_name" "$final_container" /etc/ld.so.cache /
 # Set user to non-root
 buildah config --user 1001 "$final_container" >&2
 
+# Set default cmd as jshell for JDKs
+if [ "$SEMERU_RUNTIME_KIND" = "jdk" ]; then
+    buildah config --cmd "jshell" "$final_container" >&2
+fi
+
 # Commit final image
 buildah commit "$final_container" "$FINAL_IMAGE_NAME" >&2
 
