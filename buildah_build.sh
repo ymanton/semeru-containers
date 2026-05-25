@@ -84,7 +84,24 @@ echo "Installing base packages..." >&2
 # Use dnf with --installroot to install into the container
 if command -v dnf &> /dev/null; then
     echo "Installing packages..." >&2
-    dnf install -y --installroot="$base_mount_point" $SEMERU_PACKAGES $CRIU_PACKAGES >&2
+
+    # Install minimal language support for system commands like bash, find, grep, etc.
+    # This file exists in ubi-minimal containers and takes effect when packages are installed from within the container.
+    # Since we're running dnf on the host, we need this file there.
+    # If it existed previously we back it up and restore when done.
+    rpm_macros_file="$HOME/.rpmmacros"
+    mkdir -p "$(dirname $rpm_macros_file)"
+    [ -e "$rpm_macros_file" ] && echo "Backing up existing rpm macros" >&2 && cp "$rpm_macros_file" "$rpm_macros_file.bak"
+    echo "Setting up temp rpm macros" >&2 && echo '%_install_langs C.utf8' >> "$rpm_macros_file"
+
+    dnf install -y --installroot="$base_mount_point" --releasever=$base_mount_point --setopt=install_weak_deps=False --setopt=tsflags=nodocs $SEMERU_PACKAGES $CRIU_PACKAGES >&2
+    dnf --installroot="$base_mount_point" clean all >&2
+
+    echo "Removing temp rpm macros" >&2 && rm -rfv "$rpm_macros_file"
+    [ -e "$rpm_macros_file.bak" ] && echo "Restoring backup rpm macros" >&2 && mv "$rpm_macros_file.bak" "$rpm_macros_file"
+
+    # Leftovers from dnf
+    rm -rfv "$base_mount_point/var/cache/" "$base_mount_point/var/lib/rhsm/" "$base_mount_point/var/lib/rpm/" "$base_mount_point/var/log/"
 else
     echo "Error: 'dnf' command not found" >&2
     return 1
