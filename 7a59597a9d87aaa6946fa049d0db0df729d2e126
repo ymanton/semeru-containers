@@ -1,0 +1,3 @@
+{"id":"57f17582-58e0-41e4-a346-3e34216774f1","ts":"2026-05-22T17:07:39.408Z","path":"/home/ymanton/semeru-containers/analyze_image_size.sh","version":"1.0.0","taskID":"216e19bf-374b-487f-9ef4-646551f2344e"}
+{"id":"fb2cfb37-3bb1-4cb8-8dba-9c997f0bd375","ts":"2026-05-22T17:07:55.200Z","path":"/home/ymanton/semeru-containers/compare_images.sh","version":"1.0.0","taskID":"216e19bf-374b-487f-9ef4-646551f2344e"}
+{"id":"a8c8287f-042b-4285-b87c-bca444671e9e","ts":"2026-05-22T17:11:11.425Z","path":"/home/ymanton/semeru-containers/deep_compare.sh","version":"1.0.0","taskID":"216e19bf-374b-487f-9ef4-646551f2344e"}
