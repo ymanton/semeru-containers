@@ -28,7 +28,7 @@ image=$1
 dloc=$2
 edition=$3
 dockerFile="Dockerfile.$edition.releases.full"
-dfile=$dloc$dockerFile
+dfile=$dloc/$dockerFile
 containerEngine=docker
 criu_secrets=$4
 
