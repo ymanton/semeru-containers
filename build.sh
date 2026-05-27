@@ -19,17 +19,18 @@
 #  Script to build a docker image                                                   #
 #                                                                                   #
 #                                                                                   #
-#  Usage : build.sh <Image name> <Dockerfile location> <criu secrets file>          #
+#  Usage : build.sh <Image name> <Dockerfile location> <edition> <criu secrets file>#
 #                                                                                   #
 #####################################################################################
 set -o pipefail
 
 image=$1
 dloc=$2
-dockerFile="Dockerfile.open.releases.full"
+edition=$3
+dockerFile="Dockerfile.$edition.releases.full"
 dfile=$dloc$dockerFile
 containerEngine=docker
-criu_secrets=$3
+criu_secrets=$4
 
 tag=`echo $image | cut -d ":" -f2`
 
@@ -46,7 +47,7 @@ then
          echo "No CRIU secrets file provided using \"\""
          criu_secrets=""
       else
-         echo "Usage : build.sh <Image name> <Dockerfile location> <criu_secrets_file>"
+         echo "Usage : build.sh <Image name> <Dockerfile location> <edition> <criu_secrets_file>"
          exit 1
       fi
    fi
